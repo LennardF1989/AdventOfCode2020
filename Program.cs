@@ -27,10 +27,13 @@ namespace AdventOfCode
             Day6.StartA();
             Day6.StartB();
 
-            Logger.ShowDebug = true;
-
             Day7.StartA();
             Day7.StartB();
+
+            Logger.ShowDebug = true;
+
+            Day8.StartA();
+            Day8.StartB();
 
             Console.ReadKey();
         }
