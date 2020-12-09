@@ -9,16 +9,16 @@ namespace AdventOfCode2015
         {
             Logger.ShowDebug = false;
 
-            Day1.StartA();
-            Day1.StartB();
+            Day01.StartA();
+            Day01.StartB();
 
-            Day2.StartA();
-            Day2.StartB();
+            Day02.StartA();
+            Day02.StartB();
 
             Logger.ShowDebug = true;
 
-            Day3.StartA();
-            Day3.StartB();
+            Day03.StartA();
+            Day03.StartB();
 
             Console.ReadKey();
         }

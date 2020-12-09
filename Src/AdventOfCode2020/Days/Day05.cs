@@ -4,12 +4,12 @@ using System.IO;
 
 namespace AdventOfCode2020.Days
 {
-    public static class Day5
+    public static class Day05
     {
         public static void StartA()
         {
-            //var lines = File.ReadAllLines("Content\\Day5_Test.txt");
-            var lines = File.ReadAllLines("Content\\Day5.txt");
+            //var lines = File.ReadAllLines("Content\\Day05_Test.txt");
+            var lines = File.ReadAllLines("Content\\Day05.txt");
 
             int highestSeatId = 0;
 
@@ -71,8 +71,8 @@ namespace AdventOfCode2020.Days
 
         public static void StartB()
         {
-            //var lines = File.ReadAllLines("Content\\Day5_Test.txt");
-            var lines = File.ReadAllLines("Content\\Day5.txt");
+            //var lines = File.ReadAllLines("Content\\Day05_Test.txt");
+            var lines = File.ReadAllLines("Content\\Day05.txt");
 
             List<int> seatIds = new List<int>();
 

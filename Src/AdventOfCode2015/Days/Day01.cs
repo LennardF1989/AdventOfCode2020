@@ -2,11 +2,11 @@
 
 namespace AdventOfCode2015.Days
 {
-    public static class Day1
+    public static class Day01
     {
         public static void StartA()
         {
-            var text = File.ReadAllText("Content\\Day1.txt");
+            var text = File.ReadAllText("Content\\Day01.txt");
 
             int floor = 0;
             foreach (char c in text)
@@ -26,7 +26,7 @@ namespace AdventOfCode2015.Days
 
         public static void StartB()
         {
-            var text = File.ReadAllText("Content\\Day1.txt");
+            var text = File.ReadAllText("Content\\Day01.txt");
 
             int answer = 0;
 

@@ -6,61 +6,67 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="Content\Day2_Test.txt">
+    <None Update="Content\Day02_Test.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Day9.txt">
+    <None Update="Content\Day10.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Day8_Test.txt">
+    <None Update="Content\Day09_Test.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Day8.txt">
+    <None Update="Content\Day09.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Day7_Test2.txt">
+    <None Update="Content\Day08_Test.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Day7_Test.txt">
+    <None Update="Content\Day08.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Day7.txt">
+    <None Update="Content\Day07_Test2.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Day1_Test.txt">
+    <None Update="Content\Day07_Test.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Day1.txt">
+    <None Update="Content\Day07.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Day2.txt">
+    <None Update="Content\Day01_Test.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Day6_Test.txt">
+    <None Update="Content\Day01.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Day6.txt">
+    <None Update="Content\Day02.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Day5_Test.txt">
+    <None Update="Content\Day06_Test.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Day5.txt">
+    <None Update="Content\Day06.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Day4.txt">
+    <None Update="Content\Day05_Test.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Day4_Test2.txt">
+    <None Update="Content\Day05.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Day4_Test.txt">
+    <None Update="Content\Day04.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Day3_Test.txt">
+    <None Update="Content\Day04_Test2.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Content\Day3.txt">
+    <None Update="Content\Day04_Test.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Day03_Test.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Day03.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

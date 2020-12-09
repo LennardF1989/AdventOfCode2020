@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace AdventOfCode2020.Days
 {
-    public static class Day4
+    public static class Day04
     {
         private const string BirthYear = "byr";
         private const string IssueYear = "iyr";
@@ -44,8 +44,8 @@ namespace AdventOfCode2020.Days
 
         public static void StartA()
         {
-            //var lines = File.ReadAllLines("Content\\Day4_Test.txt");
-            var lines = File.ReadAllLines("Content\\Day4.txt");
+            //var lines = File.ReadAllLines("Content\\Day04_Test.txt");
+            var lines = File.ReadAllLines("Content\\Day04.txt");
 
             StringBuilder stringBuilder = new StringBuilder();
 
@@ -93,8 +93,8 @@ namespace AdventOfCode2020.Days
 
         public static void StartB()
         {
-            //var lines = File.ReadAllLines("Content\\Day4_Test2.txt");
-            var lines = File.ReadAllLines("Content\\Day4.txt");
+            //var lines = File.ReadAllLines("Content\\Day04_Test2.txt");
+            var lines = File.ReadAllLines("Content\\Day04.txt");
 
             StringBuilder stringBuilder = new StringBuilder();
 

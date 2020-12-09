@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace AdventOfCode2020.Days
 {
-    public static class Day8
+    public static class Day08
     {
         enum EOperation
         {
@@ -30,8 +30,8 @@ namespace AdventOfCode2020.Days
 
         public static void StartA()
         {
-            //var lines = File.ReadAllLines("Content\\Day8_Test.txt");
-            var lines = File.ReadAllLines("Content\\Day8.txt");
+            //var lines = File.ReadAllLines("Content\\Day08_Test.txt");
+            var lines = File.ReadAllLines("Content\\Day08.txt");
 
             var instructions = ParseLines(lines); 
             int result = InstructionInterpreter(instructions);
@@ -41,8 +41,8 @@ namespace AdventOfCode2020.Days
 
         public static void StartB()
         {
-            //var lines = File.ReadAllLines("Content\\Day8_Test.txt");
-            var lines = File.ReadAllLines("Content\\Day8.txt");
+            //var lines = File.ReadAllLines("Content\\Day08_Test.txt");
+            var lines = File.ReadAllLines("Content\\Day08.txt");
 
             var instructions = ParseLines(lines); 
             int result = InstructionInterpreterFixer(instructions);

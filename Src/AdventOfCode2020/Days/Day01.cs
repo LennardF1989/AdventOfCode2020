@@ -3,12 +3,12 @@ using System.Linq;
 
 namespace AdventOfCode2020.Days
 {
-    public static class Day1
+    public static class Day01
     {
         public static void StartA()
         {
-            //var lines = File.ReadAllLines("Content\\Day1_Test.txt");
-            var lines = File.ReadAllLines("Content\\Day1.txt");
+            //var lines = File.ReadAllLines("Content\\Day01_Test.txt");
+            var lines = File.ReadAllLines("Content\\Day01.txt");
 
             var numbers = lines
                 .Select(int.Parse)
@@ -38,8 +38,8 @@ namespace AdventOfCode2020.Days
 
         public static void StartB()
         {
-            //var lines = File.ReadAllLines("Content\\Day1_Test.txt");
-            var lines = File.ReadAllLines("Content\\Day1.txt");
+            //var lines = File.ReadAllLines("Content\\Day01_Test.txt");
+            var lines = File.ReadAllLines("Content\\Day01.txt");
 
             var numbers = lines
                 .Select(int.Parse)

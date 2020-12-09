@@ -5,11 +5,11 @@ using System.Linq;
 
 namespace AdventOfCode2015.Days
 {
-    public static class Day2
+    public static class Day02
     {
         public static void StartA()
         {
-            var lines = File.ReadAllLines("Content\\Day2.txt");
+            var lines = File.ReadAllLines("Content\\Day02.txt");
 
             int answer = 0;
 
@@ -40,8 +40,8 @@ namespace AdventOfCode2015.Days
 
         public static void StartB()
         {
-            //var lines = File.ReadAllLines("Content\\Day2_Test.txt");
-            var lines = File.ReadAllLines("Content\\Day2.txt");
+            //var lines = File.ReadAllLines("Content\\Day02_Test.txt");
+            var lines = File.ReadAllLines("Content\\Day02.txt");
 
             int answer = 0;
 

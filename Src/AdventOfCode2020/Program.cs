@@ -9,34 +9,37 @@ namespace AdventOfCode2020
         {
             Logger.ShowDebug = false;
 
-            Day1.StartA();
-            Day1.StartB();
+            Day01.StartA();
+            Day01.StartB();
 
-            Day2.StartA();
-            Day2.StartB();
+            Day02.StartA();
+            Day02.StartB();
 
-            Day3.StartA();
-            Day3.StartB();
+            Day03.StartA();
+            Day03.StartB();
 
-            Day4.StartA();
-            Day4.StartB();
+            Day04.StartA();
+            Day04.StartB();
 
-            Day5.StartA();
-            Day5.StartB();
+            Day05.StartA();
+            Day05.StartB();
 
-            Day6.StartA();
-            Day6.StartB();
+            Day06.StartA();
+            Day06.StartB();
 
-            Day7.StartA();
-            Day7.StartB();
+            Day07.StartA();
+            Day07.StartB();
 
-            Day8.StartA();
-            Day8.StartB();
+            Day08.StartA();
+            Day08.StartB();
+
+            Day09.StartA();
+            Day09.StartB();
 
             Logger.ShowDebug = true;
 
-            Day9.StartA();
-            Day9.StartB();
+            Day10.StartA();
+            Day10.StartB();
 
             Console.ReadKey();
         }

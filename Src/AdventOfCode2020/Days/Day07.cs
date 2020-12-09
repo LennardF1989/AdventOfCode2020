@@ -5,12 +5,12 @@ using System.Linq;
 
 namespace AdventOfCode2020.Days
 {
-    public class Day7
+    public class Day07
     {
         public static void StartA()
         {
-            //var lines = File.ReadAllLines("Content\\Day7_Test.txt");
-            var lines = File.ReadAllLines("Content\\Day7.txt");
+            //var lines = File.ReadAllLines("Content\\Day07_Test.txt");
+            var lines = File.ReadAllLines("Content\\Day07.txt");
 
             Dictionary<string, List<Tuple<int, string>>> bags = new Dictionary<string, List<Tuple<int, string>>>();
 
@@ -148,9 +148,9 @@ namespace AdventOfCode2020.Days
 
         public static void StartB()
         {
-            //var lines = File.ReadAllLines("Content\\Day7_Test.txt");
-            //var lines = File.ReadAllLines("Content\\Day7_Test2.txt");
-            var lines = File.ReadAllLines("Content\\Day7.txt");
+            //var lines = File.ReadAllLines("Content\\Day07_Test.txt");
+            //var lines = File.ReadAllLines("Content\\Day07_Test2.txt");
+            var lines = File.ReadAllLines("Content\\Day07.txt");
 
             Dictionary<string, Bag> bags = new Dictionary<string, Bag>();
 

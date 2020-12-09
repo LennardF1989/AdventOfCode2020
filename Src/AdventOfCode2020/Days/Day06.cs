@@ -4,12 +4,12 @@ using System.Text;
 
 namespace AdventOfCode2020.Days
 {
-    public static class Day6
+    public static class Day06
     {
         public static void StartA()
         {
-            //var lines = File.ReadAllLines("Content\\Day6_Test.txt");
-            var lines = File.ReadAllLines("Content\\Day6.txt");
+            //var lines = File.ReadAllLines("Content\\Day06_Test.txt");
+            var lines = File.ReadAllLines("Content\\Day06.txt");
 
             StringBuilder stringBuilder = new StringBuilder();
 
@@ -47,8 +47,8 @@ namespace AdventOfCode2020.Days
 
         public static void StartB()
         {
-            //var lines = File.ReadAllLines("Content\\Day6_Test.txt");
-            var lines = File.ReadAllLines("Content\\Day6.txt");
+            //var lines = File.ReadAllLines("Content\\Day06_Test.txt");
+            var lines = File.ReadAllLines("Content\\Day06.txt");
 
             StringBuilder stringBuilder = new StringBuilder();
 

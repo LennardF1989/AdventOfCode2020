@@ -2,12 +2,12 @@
 
 namespace AdventOfCode2020.Days
 {
-    public static class Day3
+    public static class Day03
     {
         public static void StartA()
         {
-            //var lines = File.ReadAllLines("Content\\Day3_Test.txt");
-            var lines = File.ReadAllLines("Content\\Day3.txt");
+            //var lines = File.ReadAllLines("Content\\Day03_Test.txt");
+            var lines = File.ReadAllLines("Content\\Day03.txt");
 
             int maxY = lines.Length;
             int maxX = lines[0].Length;
@@ -63,8 +63,8 @@ namespace AdventOfCode2020.Days
 
         public static void StartB()
         {
-            //var lines = File.ReadAllLines("Content\\Day3_Test.txt");
-            var lines = File.ReadAllLines("Content\\Day3.txt");
+            //var lines = File.ReadAllLines("Content\\Day03_Test.txt");
+            var lines = File.ReadAllLines("Content\\Day03.txt");
 
             int maxY = lines.Length;
             int maxX = lines[0].Length;

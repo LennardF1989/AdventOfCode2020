@@ -2,16 +2,16 @@
 
 namespace AdventOfCode2015.Days
 {
-    public static class Day3
+    public static class Day03
     {
         public static void StartA()
         {
-            var lines = File.ReadAllLines("Content\\Day3.txt");
+            var lines = File.ReadAllLines("Content\\Day03.txt");
         }
 
         public static void StartB()
         {
-            var lines = File.ReadAllLines("Content\\Day3.txt");
+            var lines = File.ReadAllLines("Content\\Day03.txt");
         }
     }
 }
