@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace AdventOfCode.Days
+namespace AdventOfCode2020.Days
 {
     public static class Day6
     {

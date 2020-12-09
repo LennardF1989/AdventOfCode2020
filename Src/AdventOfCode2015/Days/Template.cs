@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace AdventOfCode.Days
+namespace AdventOfCode2015.Days
 {
     public static class Template
     {

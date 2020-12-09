@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace AdventOfCode.Days
+namespace AdventOfCode2020.Days
 {
     public static class Day8
     {
@@ -37,7 +36,7 @@ namespace AdventOfCode.Days
             var instructions = ParseLines(lines); 
             int result = InstructionInterpreter(instructions);
 
-            Logger.Info($"Answer 8A: {result}");
+            Logger.Info($"Day 8A: {result}");
         }
 
         public static void StartB()
@@ -48,7 +47,7 @@ namespace AdventOfCode.Days
             var instructions = ParseLines(lines); 
             int result = InstructionInterpreterFixer(instructions);
 
-            Logger.Info($"Answer 8B: {result}");
+            Logger.Info($"Day 8B: {result}");
         }
 
         private static List<Instruction> ParseLines(string[] lines)

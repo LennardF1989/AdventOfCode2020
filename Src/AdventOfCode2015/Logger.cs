@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AdventOfCode
+namespace AdventOfCode2015
 {
     public static class Logger
     {

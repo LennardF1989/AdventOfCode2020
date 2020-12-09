@@ -1,7 +1,7 @@
 ﻿using System;
-using AdventOfCode.Days;
+using AdventOfCode2020.Days;
 
-namespace AdventOfCode
+namespace AdventOfCode2020
 {
     public static class Program
     {
@@ -30,10 +30,13 @@ namespace AdventOfCode
             Day7.StartA();
             Day7.StartB();
 
-            Logger.ShowDebug = true;
-
             Day8.StartA();
             Day8.StartB();
+
+            Logger.ShowDebug = true;
+
+            Day9.StartA();
+            Day9.StartB();
 
             Console.ReadKey();
         }
