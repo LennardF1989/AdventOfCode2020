@@ -35,11 +35,11 @@ namespace AdventOfCode2020
 
             Day09.StartA();
             Day09.StartB();
-
-            Logger.ShowDebug = true;
-
+            
             Day10.StartA();
             Day10.StartB();
+
+            Logger.ShowDebug = true;
 
             Console.ReadKey();
         }
