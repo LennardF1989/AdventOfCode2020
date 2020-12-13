@@ -47,6 +47,8 @@ namespace AdventOfCode2020
             
             Day13.StartA();
             Day13.StartB();
+            Day13.StartB2();
+            Day13.StartB3();
 
             Logger.ShowDebug = true;
 

@@ -114,5 +114,137 @@ namespace AdventOfCode2020.Days
 
             return sm % prod;
         }
+
+        public static void StartB2()
+        {
+            //var lines = File.ReadAllLines("Content\\Day13_Test.txt");
+            var lines = File.ReadAllLines("Content\\Day13.txt");
+
+            List<int> departures = lines[1]
+                .Split(",")
+                .Select(x =>
+                {
+                    if (int.TryParse(x, out var e))
+                    {
+                        return e;
+                    }
+
+                    return 0;
+                })
+                .ToList();
+            
+            long t = 0;
+            long increment = departures[0];
+
+            int offset = 1;
+            List<long> foundPatterns = new List<long>
+            {
+                departures[0]
+            };
+
+            while (offset < departures.Count)
+            {
+                if (departures[offset] == 0)
+                {
+                    offset++;
+
+                    continue;
+                }
+
+                t += increment;
+
+                if ((t + offset) % departures[offset] == 0)
+                {
+                    foundPatterns.Add(departures[offset]);
+                    increment = DetermineLeastCommonMultiple(foundPatterns);
+                    offset++;
+
+                    Logger.Debug(increment);
+                }
+            }
+            
+            Logger.Info($"Day 12B: {t}");
+        }
+
+        //Based on: https://stackoverflow.com/questions/13569810/least-common-multiple
+        private static long DetermineLeastCommonMultiple(List<long> numbers)
+        {
+            static long GreatestCommonFactor(long a, long b)
+            {
+                while (b != 0)
+                {
+                    long temp = b;
+                    b = a % b;
+                    a = temp;
+                }
+                return a;
+            }
+
+            static long LeastCommonMultiple(long a, long b)
+            {
+                return (a / GreatestCommonFactor(a, b)) * b;
+            }
+
+            long lastLcm = LeastCommonMultiple(numbers[^2], numbers[^1]);
+
+            for (int i = numbers.Count - 3; i >= 0; i--)
+            {
+                lastLcm = LeastCommonMultiple(numbers[i], lastLcm);
+            }
+
+            return lastLcm;
+        }
+
+        public static void StartB3()
+        {
+            //var lines = File.ReadAllLines("Content\\Day13_Test.txt");
+            var lines = File.ReadAllLines("Content\\Day13.txt");
+
+            List<int> departures = lines[1]
+                .Split(",")
+                .Select(x =>
+                {
+                    if (int.TryParse(x, out var e))
+                    {
+                        return e;
+                    }
+
+                    return 0;
+                })
+                .ToList();
+            
+            long t = 0;
+            long increment = departures[0];
+            int offset = 1;
+
+            //Loop while we still have Bus ID's to check
+            while (offset < departures.Count)
+            {
+                //If the current offset and at a 'x'-location, increment it.
+                if (departures[offset] == 0)
+                {
+                    offset++;
+
+                    continue;
+                }
+
+                //Increment the current time with the latest determined increment
+                t += increment;
+
+                //Check if the current time results in a repeated pattern at the offset
+                if ((t + offset) % departures[offset] != 0)
+                {
+                    continue;
+                }
+
+                //Multiply the current increment with the Bus ID
+                increment *= departures[offset];
+
+                //Increment the offset so we can start looking for the next repeating pattern
+                offset++;
+            }
+            
+            Logger.Info($"Day 12B: {t}");
+        }
     }
 }
