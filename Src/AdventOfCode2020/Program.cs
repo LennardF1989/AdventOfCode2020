@@ -53,10 +53,13 @@ namespace AdventOfCode2020
             Day14.StartA();
             Day14.StartB();
 
-            Logger.ShowDebug = true;
-
             Day15.StartA();
             Day15.StartB();
+
+            Logger.ShowDebug = true;
+
+            Day16.StartA();
+            Day16.StartB();
 
             Console.ReadKey();
         }
