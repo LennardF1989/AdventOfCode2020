@@ -8,6 +8,8 @@ namespace AdventOfCode2020
         public static void Main(string[] args)
         {
             Logger.ShowDebug = false;
+            
+            Leaderboard.Start();
 
             Day01.StartA();
             Day01.StartB();
@@ -65,10 +67,13 @@ namespace AdventOfCode2020
             Day18.StartA();
             Day18.StartB();
 
-            Logger.ShowDebug = true;
-
             Day19.StartA();
             Day19.StartB();
+
+            Logger.ShowDebug = true;
+
+            Day20.StartA();
+            Day20.StartB();
 
             Console.ReadKey();
         }
