@@ -552,6 +552,8 @@ namespace AdventOfCode2020.Days
 
                 if (enabledAfter < enabledBefore)
                 {
+                    File.WriteAllText("seamonsters.txt", orientation.ToString());
+
                     return enabledAfter;
                 }
             }
