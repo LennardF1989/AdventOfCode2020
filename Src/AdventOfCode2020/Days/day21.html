@@ -1,0 +1,611 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>TranslationQuest</title>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+            integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+            crossorigin="anonymous"></script>
+
+    <script type="text/plain" id="input">
+        mxmxvkd kfcds sqjhc nhms (contains dairy, fish)
+        trh fvjkl sbzzf mxmxvkd (contains dairy)
+        sqjhc fvjkl (contains soy)
+        sqjhc mxmxvkd sbzzf (contains fish)
+    </script>
+
+    <style>
+        body {
+            font-family: sans-serif;
+            font-size: 20px;
+            margin: 15px;
+        }
+
+        .table {
+        }
+
+        .table .thead {
+            font-weight: bold;
+        }
+
+        .table-row {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .table-col {
+            flex-basis: 100%;
+            flex: 1;
+        }
+
+        .table-col-2 {
+            flex-basis: 100%;
+            flex: 2;
+        }
+
+        .block-left, .block-right {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .block-left:after {
+            content: "["
+        }
+
+        .block-right:after {
+            content: "]"
+        }
+
+        .ingredients, .allergens {
+            display: inline-block;
+        }
+
+        .ingredients .item, .allergens .item {
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .ingredients .item:after, .allergens .item:after {
+            content: ","
+        }
+
+        .ingredients .item:last-child:after, .allergens .item:last-child:after {
+            content: ""
+        }
+
+        .status {
+            background-color: orange;
+            margin-bottom: 15px;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .settings {
+            background-color: orange;
+            margin-bottom: 15px;
+            padding: 5px;
+            text-align: center;
+            font-size: initial;
+        }
+
+        .settings div {
+            display: inline-block;
+        }
+
+        .settings .input {
+            width: 50px;
+        }
+
+        .done .table-row {
+            background-color: lightgreen;
+        }
+
+        .mark-line {
+            background-color: orange;
+        }
+
+        .table-row.processing, .table-row.ignored, .ignored .table-row {
+            background-color: lightgray;
+        }
+
+        .mark-line .mark-word {
+            background-color: white;
+        }
+
+        .mark-word {
+            background-color: orange;
+        }
+    </style>
+</head>
+<body>
+    <script type="text/html" id="template">
+        <div class="table-row">
+            <div class="table-col table-col-2">
+                <span class="block-left"></span>
+                <div class="ingredients"></div>
+                <span class="block-right"></span>
+            </div>
+            <div class="table-col table-col-1">
+                <span class="block-left"></span>
+                <div class="allergens"></div>
+                <span class="block-right"></span>
+            </div>
+        </div>
+    </script>
+
+    <div class="table">
+        <div class="table-row">
+            <div class="table-col settings">
+                <div>
+                    Write Speed:
+                    <input type="number" class="input write" value="100" min="10" step="10" />
+                </div>
+                <div>
+                    Read Speed:
+                    <input type="number" class="input read" value="2000" min="10" step="10" />
+                </div>
+                <div>
+                    Search Speed:
+                    <input type="number" class="input search" value="50" min="10" step="10" />
+                </div>
+                <button onclick="apply()">Apply settings</button>
+                <button onclick="start()">Start</button>
+            </div>
+        </div>
+
+        <div class="table-row">
+            <div class="table-col status">
+                <div>I don't understand a word, where do I even begin? Guess I'll just start by writing everything down...</div>
+            </div>
+        </div>
+
+        <div class="thead table-row">
+            <div class="table-col table-col-2">
+                Ingredients
+            </div>
+            <div class="table-col table-col-1">
+                Allergens
+            </div>
+        </div>
+        <div class="tbody table-row todo">
+
+        </div>
+        <div class="tbody table-row done">
+
+        </div>
+        <div class="tbody table-row ignored">
+
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var writeSpeed = 100; //100;
+        var readingSpeed = 2000; //2000;
+        var searchSpeed = 50; //50
+
+        var timeoutId;
+
+        function Line(index, ingredients, allergens) {
+            this.index = index;
+            this.ingredients = ingredients;
+            this.allergens = allergens;
+
+            return this;
+        }
+
+        function handleInstructions(instructions, i, time) {
+            timeoutId = setTimeout(function () {
+                handleInstructionsTimeout(instructions, i);
+            }, time);
+        }
+
+        function handleInstructionsTimeout(instructions, i) {
+            if (i >= instructions.length) {
+                return;
+            }
+
+            var instruction = instructions[i];
+            handleInstruction(instruction);
+
+            handleInstructions(instructions, i + 1, instruction.timeout == undefined ? readingSpeed : searchSpeed);
+        }
+
+        function handleInstruction(instruction) {
+            if (instruction.status) {
+                updateStatus(instruction.status);
+            }
+
+            if (instruction.markIndex !== undefined) {
+                markLine(instruction.markIndex);
+            }
+
+            if (instruction.markWord) {
+                markWord(instruction.markWord);
+            }
+
+            if (instruction.clearWord) {
+                clearWord(instruction.clearWord);
+            }
+
+            if (instruction.moveToTop !== undefined) {
+                moveToTop(instruction.markIndex);
+            }
+
+            if (instruction.moveToBottom !== undefined) {
+                moveToBottom(instruction.markIndex);
+            }
+
+            if (instruction.clearWords) {
+                clearWords();
+            }
+
+            if (instruction.removeWords) {
+                for (var i = 0; i < instruction.removeWords.length; i++) {
+                    removeWord(instruction.removeWords[i]);
+                }
+            }
+
+            if (instruction.removeLine) {
+                removeLine(instruction.removeLine);
+            }
+
+            if (instruction.addLine) {
+                addLine(
+                    instruction.addLine[0],
+                    instruction.addLine.length > 1 ? instruction.addLine[1] : 0
+                );
+            }
+
+            if (instruction.markLinesIgnored) {
+                markLinesIgnored();
+            }
+
+            if (instruction.markLinesProcessing) {
+                markLinesProcessing(instruction.markLinesProcessing);
+            }
+
+            if (instruction.clearProcessing) {
+                $(".tbody.todo .table-row.processing").removeClass("processing");
+            }
+
+            if (instruction.cleanupIngored) {
+                cleanup(instruction.cleanupIngored[0], instruction.cleanupIngored[1]);
+            }
+        }
+
+        function moveToTop(index) {
+            $(".tbody.todo").prepend($("." + index).closest(".table-row"));
+        }
+
+        function moveToBottom(index) {
+            $(".tbody.todo").append($("." + index).closest(".table-row"));
+        }
+
+        function markLine(index) {
+            $(".mark-line").removeClass("mark-line");
+            $("." + index).addClass("mark-line");
+        }
+
+        function markLinesIgnored() {
+            var foundRows = $(".tbody.todo .table-row");
+
+            foundRows.each(function () {
+                var self = $(this);
+
+                if (self.find(".allergens .item").length === 0) {
+                    self.addClass("ignored");
+                }
+            });
+        }
+
+        function markLinesProcessing(lines) {
+            for (var i = 0; i < lines.length; i++) {
+                $(".tbody.todo ." + lines[i].index).closest(".table-row").addClass("processing");
+            }
+        }
+
+        function markWord(word) {
+            $("." + word).addClass("mark-word");
+        }
+
+        function clearWord(word) {
+            $("." + word).removeClass("mark-word");
+        }
+
+        function removeWord(word) {
+            $("." + word).remove();
+        }
+
+        function removeLine(index) {
+            $("." + index).remove();
+        }
+
+        function clearWords() {
+            $(".mark-word").removeClass("mark-word");
+        }
+
+        function updateStatus(text) {
+            $(".status").text(text);
+        }
+
+        function cleanup(uniqueIngredients, total) {
+            var foundRows = $(".tbody.todo .table-row");
+            foundRows.each(function () {
+                var self = $(this);
+
+                if (self.find(".allergens .item").length === 0) {
+                    self.remove();
+                }
+            });
+
+            $(".tbody.ignored .table-row").remove();
+
+            addLine(new Line(-1, uniqueIngredients, [total]), -1);
+        }
+
+        function addLine(parsedLine, done) {
+            var result = $($("#template").text());
+            result.addClass(parsedLine.index + "");
+
+            var ingredients = result.find(".ingredients");
+            var allergens = result.find(".allergens");
+
+            for (var i2 = 0; i2 < parsedLine.ingredients.length; i2++) {
+                ingredients
+                    .append(
+                        $("<div>")
+                            .addClass("item")
+                            .addClass(parsedLine.ingredients[i2])
+                            .text(parsedLine.ingredients[i2])
+                    );
+            }
+
+            for (var i2 = 0; i2 < parsedLine.allergens.length; i2++) {
+                allergens
+                    .append(
+                        $("<div>")
+                            .addClass("item")
+                            .addClass(parsedLine.allergens[i2])
+                            .text(parsedLine.allergens[i2])
+                    );
+            }
+
+            if (done === 1) {
+                $(".tbody.done").append(result);
+
+                var items = $(".tbody.done").children().get();
+                items.sort(function (a, b) {
+                    return $(a).find(".allergens").text().toUpperCase().localeCompare($(b).find(".allergens").text().toUpperCase());
+                });
+                $.each(items, function (idx, itm) { $(".tbody.done").append(itm); });
+            }
+            else if (done === 0) {
+                $(".tbody.todo").append(result);
+            }
+            else {
+                $(".tbody.ignored").append(result);
+            }
+        }
+
+        function start() {
+            if (timeoutId != undefined) {
+                clearTimeout(timeoutId);
+                timeoutId = undefined;
+
+                $(".tbody.todo").empty();
+                $(".tbody.done").empty();
+                $(".tbody.ignored").empty();
+            }
+
+            apply();
+
+            var input = prompt("Please enter your input, or leave blank for default:") || $("#input").text();
+
+            var lines = input.split("\n").map(x => x.trim()).filter(x => x);
+            var parsedLines = parseLines(lines);
+            var result = getTranslations(parsedLines);
+
+            handleInstructions(result[1], 0, 0);
+        }
+
+        function apply() {
+            writeSpeed = $("input.write").val();
+            readingSpeed = $("input.read").val();
+            searchSpeed = $("input.search").val();
+        }
+
+        function parseLines(lines) {
+            var parsedLines = [];
+
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+                var line1 = line.split("(");
+
+                var ingredients = line1[0].split(" ").map(x => x.trim()).filter(x => x);
+
+                var containsLength = "contains".length;
+                var allergens = line1[1].substr(containsLength, line1[1].length - containsLength - 1).split(",").map(x => x.trim()).filter(x => x);
+
+                parsedLines.push(new Line(i, ingredients, allergens));
+            }
+
+            return parsedLines;
+        }
+
+        function getTranslations(parsedLines) {
+            var instructions = [];
+
+            instructions.push({
+                status: "I don't understand a word, where do I even begin? Guess I'll just start by writing everything down..."
+            });
+
+            //Print lines
+            for (var i = 0; i < parsedLines.length; i++) {
+                var parsedLine = parsedLines[i];
+
+                instructions.push({
+                    addLine: [new Line(parsedLine.index, [...parsedLine.ingredients], [...parsedLine.allergens]), 0],
+                    timeout: writeSpeed
+                });
+            }
+
+            var translations = {};
+
+            while (true) {
+                var first = parsedLines.find(x => x.allergens.length === 1);
+
+                if (!first) {
+                    instructions.push({
+                        status: "We have nothing left translate, we're done!"
+                    });
+
+                    break;
+                }
+
+                parsedLines.splice(parsedLines.indexOf(first), 1);
+                parsedLines.unshift(first);
+
+                instructions.push({
+                    status: "Find the first line with exactly one allergen and move it to the top.",
+                    markIndex: first.index
+                });
+
+                instructions.push({
+                    markIndex: first.index,
+                    moveToTop: true
+                });
+
+                var firstAllergen = first.allergens[0];
+
+                var candidates = parsedLines.filter(x => x !== first && x.allergens.indexOf(firstAllergen) >= 0);
+
+                instructions.push({
+                    status: "Find all other lines that contain the allergen '" + firstAllergen + "'.",
+                    markWord: firstAllergen
+                });
+
+                instructions.push({
+                    markLinesProcessing: candidates
+                });
+
+                var foundIngredients = [];
+
+                for (var i = 0; i < first.ingredients.length; i++) {
+                    var firstIngredient = first.ingredients[i];
+
+                    instructions.push({
+                        status: "Check if all those lines contain the ingredient '" + firstIngredient + "'.",
+                        markWord: firstIngredient,
+                        timeout: -1
+                    });
+
+                    var result = candidates.every(x => x.ingredients.indexOf(firstIngredient) >= 0);
+
+                    if (result) {
+                        instructions.push({
+                            status: "Found a potential match, remember it and continue."
+                        });
+
+                        foundIngredients.push(firstIngredient);
+
+                        if (foundIngredients.length > 1) {
+                            break;
+                        }
+                    }
+                    else {
+                        instructions.push({
+                            clearWord: firstIngredient,
+                            timeout: -1
+                        });
+                    }
+                }
+
+                if (foundIngredients.length === 1) {
+                    var firstIngredient1 = foundIngredients[0];
+                    translations[firstIngredient1] = firstAllergen;
+
+                    for (var i = 0; i < parsedLines.length; i++) {
+                        var parsedLine = parsedLines[i];
+
+                        parsedLine.ingredients = parsedLine.ingredients.filter(x => x !== firstIngredient1);
+                        parsedLine.allergens = parsedLine.allergens.filter(x => x !== firstAllergen);
+                    }
+
+                    var emptyLines = [];
+                    var ingredients = [];
+
+                    for (var i = 0; i < parsedLines.length; i++) {
+                        var parsedLine = parsedLines[i];
+
+                        if (parsedLine.allergens.length === 0) {
+                            emptyLines.push(i);
+                            ingredients = ingredients.concat(parsedLine.ingredients);
+                        }
+                    }
+
+                    var tempIngredients = ingredients
+                        .reduce((acum, cur) => Object.assign(acum, { [cur]: (acum[cur] || 0) + 1 }), {});
+
+                    var uniqueIngredients = [];
+
+                    for (var ingredient in tempIngredients) {
+                        if (Object.prototype.hasOwnProperty.call(tempIngredients, ingredient)) {
+                            uniqueIngredients.push(ingredient + " (" + tempIngredients[ingredient] + ")");
+                        }
+                    }
+
+                    uniqueIngredients.sort();
+
+                    instructions.push({
+                        status:
+                            "Hurray, this appears to be the only possible match! " +
+                            "Remove the ingredient and allergen from all others lines and move the current line to the bottom."
+                    });
+
+                    instructions.push({
+                        clearProcessing: true
+                    });
+
+                    instructions.push({
+                        removeWords: [firstIngredient1, firstAllergen],
+                        addLine: [new Line(-1, [firstIngredient1], [firstAllergen]), 1]
+                    });
+
+                    instructions.push({
+                        status: "Cleanup all lines with no allergens left.",
+                        markLinesIgnored: true
+                    });
+
+                    instructions.push({
+                        cleanupIngored: [uniqueIngredients, ingredients.length]
+                    });
+                }
+                else {
+                    parsedLines.splice(parsedLines.indexOf(first), 1);
+                    parsedLines.push(first);
+
+                    instructions.push({
+                        status:
+                            "Uh oh, we already had a potential match! " +
+                            "Stop matching and move the current line to the bottom."
+                    });
+
+                    instructions.push({
+                        clearProcessing: true
+                    });
+
+                    instructions.push({
+                        markIndex: first.index,
+                        clearWords: true,
+                        moveToBottom: true
+                    });
+                }
+            }
+
+            return [translations, instructions];
+        }
+    </script>
+</body>
+</html>
