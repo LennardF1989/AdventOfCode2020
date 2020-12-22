@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http.Headers;
 
 namespace AdventOfCode2020.Days
 {
@@ -101,8 +99,8 @@ namespace AdventOfCode2020.Days
 
         public static void StartB()
         {
-            var lines = File.ReadAllLines("Content\\Day16_Test2.txt");
-            //var lines = File.ReadAllLines("Content\\Day16.txt");
+            //var lines = File.ReadAllLines("Content\\Day16_Test2.txt");
+            var lines = File.ReadAllLines("Content\\Day16.txt");
             var parsedInput = ParseLines(lines);
 
             var validNearbyTickets = parsedInput
