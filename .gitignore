@@ -1,5 +1,7 @@
+/Res
 .vs
 bin
 obj
 *.suo
 *.user
+leaderboard.json
