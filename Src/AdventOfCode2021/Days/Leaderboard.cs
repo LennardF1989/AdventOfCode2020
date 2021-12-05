@@ -64,6 +64,8 @@ namespace AdventOfCode2021.Days
 
             public List<Day> Days { get; set; }
 
+            public bool IsAnonymous { get; set; }
+
             public Member()
             {
                 Days = new List<Day>();
@@ -89,27 +91,51 @@ namespace AdventOfCode2021.Days
             var jsonString = File.ReadAllText("Content\\Leaderboard.json");
             var jsonData = JsonConvert.DeserializeObject<LeaderboardData>(jsonString);
 
-            var members = GetMemberInfo(jsonData);
+            var idNameMapping = new Dictionary<string, string>
+            {
+                { "1132897", "Jan Derriks" },
+                { "1101553", "Jan Derriks" }
+            };
+
+            var mergeMapping = new List<(string, string)>
+            {
+                ("1132897", "1101553")
+            };
+
+            var members = GetMemberInfo(jsonData, idNameMapping, mergeMapping);
 
             var result = PrintAllMemberInfo(members);
             Logger.Debug(result);
+
+            members = members
+                .Where(x => !x.IsAnonymous)
+                .ToList();
 
             result = ExportLocalScoreboardOriginal(members);
             File.WriteAllText("leaderboard-original.csv", result);
         }
 
-        private static List<Member> GetMemberInfo(LeaderboardData leaderboardData)
+        private static List<Member> GetMemberInfo(
+            LeaderboardData leaderboardData,
+            Dictionary<string, string> idNameMapping, 
+            List<(string, string)> mergeMapping
+        )
         {
             List<Member> members = new List<Member>();
 
             foreach (var leaderboardMember in leaderboardData.Members.Values)
             {
-                var name = leaderboardMember.Name ?? "#" + leaderboardMember.Id;
-
+                if (!idNameMapping.TryGetValue(leaderboardMember.Id, out var name))
+                {
+                    name = leaderboardMember.Name ?? "#" + leaderboardMember.Id;
+                }
+                
                 var member = new Member
                 {
                     Id = leaderboardMember.Id,
-                    Name = name
+                    Name = name,
+
+                    IsAnonymous = leaderboardMember.Name == null
                 };
 
                 members.Add(member);
@@ -137,6 +163,55 @@ namespace AdventOfCode2021.Days
                         day.Part2 = date.DateTime;
                     }
                 }
+            }
+
+            foreach (var merge in mergeMapping)
+            {
+                var member1 = members.FirstOrDefault(x => x.Id == merge.Item1);
+                var member2 = members.FirstOrDefault(x => x.Id == merge.Item2);
+
+                if (member1 == null || member2 == null)
+                {
+                    continue;
+                }
+
+                var newMember = new Member
+                {
+                    Name = member1.Name,
+                    Id = member1.Id
+                };
+
+                for (var i = 0; i < 25; i++)
+                {
+                    var day1 = member1.Days[i];
+                    var day2 = member2.Days[i];
+
+                    double minutes1 = Double.MaxValue;
+                    double minutes2 = Double.MaxValue;
+
+                    if (day1.Part1.HasValue && day1.Part2.HasValue)
+                    {
+                        minutes1 = (day1.Part2.Value - day1.Part1.Value).TotalMinutes;
+                    }
+
+                    if (day2.Part1.HasValue && day2.Part2.HasValue)
+                    {
+                        minutes2 = (day2.Part2.Value - day2.Part1.Value).TotalMinutes;
+                    }
+
+                    if (minutes1 > minutes2)
+                    {
+                        newMember.Days.Add(member1.Days[i]);
+                    }
+                    else
+                    {
+                        newMember.Days.Add(member2.Days[i]);
+                    }
+                }
+
+                members.Remove(member1);
+                members.Remove(member2);
+                members.Add(newMember);
             }
 
             return members;
