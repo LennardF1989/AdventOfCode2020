@@ -9,7 +9,7 @@ namespace AdventOfCode2021
         {
             Logger.ShowDebug = false;
 
-            //Leaderboard.Start();
+            Leaderboard.Start();
 
             Day01.StartA();
             Day01.StartB();
@@ -26,10 +26,13 @@ namespace AdventOfCode2021
             Day05.StartA();
             Day05.StartB();
 
-            Logger.ShowDebug = true;
-
             Day06.StartA();
             Day06.StartB();
+
+            Logger.ShowDebug = true;
+
+            Day07.StartA();
+            Day07.StartB();
 
             Console.ReadKey();
         }
