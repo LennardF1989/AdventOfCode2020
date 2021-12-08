@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace AdventOfCode2021.Days
+namespace AdventOfCode.Shared
 {
     public static class Leaderboard
     {
@@ -51,6 +51,21 @@ namespace AdventOfCode2021.Days
             public string Event { get; set; }
         }
 
+        private class LeaderboardSettings
+        {
+            [JsonProperty("idMapping")]
+            public Dictionary<string, string> IdMapping { get; set; }
+
+            [JsonProperty("mergeMapping")]
+            public Dictionary<string, string> MergeMapping { get; set; }
+
+            public LeaderboardSettings()
+            {
+                IdMapping = new Dictionary<string, string>();
+                MergeMapping = new Dictionary<string, string>();
+            }
+        }
+
         private class Day
         {
             public DateTime? Part1 { get; set; }
@@ -71,7 +86,7 @@ namespace AdventOfCode2021.Days
                 Days = new List<Day>();
             }
         }
-        
+
         private class ScoreboardEntry
         {
             public string Id { get; set; }
@@ -86,25 +101,37 @@ namespace AdventOfCode2021.Days
             public int Score { get; set; }
         }
 
+        private const string LEADERBOARD_JSON = "Content\\Leaderboard.json";
+        private const string LEADERBOARD_SETTINGS_JSON = "Content\\Leaderboard_Settings.json";
+
         public static void Start()
         {
-            var jsonString = File.ReadAllText("Content\\Leaderboard.json");
-            var jsonData = JsonConvert.DeserializeObject<LeaderboardData>(jsonString);
-
-            var idNameMapping = new Dictionary<string, string>
+            if (!File.Exists(LEADERBOARD_JSON))
             {
-                { "1132897", "Jan Derriks" },
-                { "1101553", "Jan Derriks" }
-            };
+                return;
+            }
 
-            var mergeMapping = new List<(string, string)>
+            var leaderboardData = JsonConvert.DeserializeObject<LeaderboardData>(
+                File.ReadAllText(LEADERBOARD_JSON)
+            );
+
+            LeaderboardSettings leaderboardSettings;
+
+            if (File.Exists(LEADERBOARD_SETTINGS_JSON))
             {
-                ("1132897", "1101553")
-            };
+                leaderboardSettings = JsonConvert.DeserializeObject<LeaderboardSettings>(
+                    File.ReadAllText(LEADERBOARD_SETTINGS_JSON)
+                );
+            }
+            else
+            {
+                leaderboardSettings = new LeaderboardSettings();
+            }
 
-            var members = GetMemberInfo(jsonData, idNameMapping, mergeMapping);
+            var members = GetMemberInfo(leaderboardData, leaderboardSettings);
 
             var result = PrintAllMemberInfo(members);
+
             Logger.Debug(result);
 
             members = members
@@ -112,24 +139,24 @@ namespace AdventOfCode2021.Days
                 .ToList();
 
             result = ExportLocalScoreboardOriginal(members);
+
             File.WriteAllText("leaderboard-original.csv", result);
         }
 
         private static List<Member> GetMemberInfo(
             LeaderboardData leaderboardData,
-            Dictionary<string, string> idNameMapping, 
-            List<(string, string)> mergeMapping
+            LeaderboardSettings leaderboardSettings
         )
         {
             List<Member> members = new List<Member>();
 
             foreach (var leaderboardMember in leaderboardData.Members.Values)
             {
-                if (!idNameMapping.TryGetValue(leaderboardMember.Id, out var name))
+                if (!leaderboardSettings.IdMapping.TryGetValue(leaderboardMember.Id, out var name))
                 {
                     name = leaderboardMember.Name ?? "#" + leaderboardMember.Id;
                 }
-                
+
                 var member = new Member
                 {
                     Id = leaderboardMember.Id,
@@ -165,10 +192,10 @@ namespace AdventOfCode2021.Days
                 }
             }
 
-            foreach (var merge in mergeMapping)
+            foreach (var merge in leaderboardSettings.MergeMapping)
             {
-                var member1 = members.FirstOrDefault(x => x.Id == merge.Item1);
-                var member2 = members.FirstOrDefault(x => x.Id == merge.Item2);
+                var member1 = members.FirstOrDefault(x => x.Id == merge.Key);
+                var member2 = members.FirstOrDefault(x => x.Id == merge.Value);
 
                 if (member1 == null || member2 == null)
                 {
@@ -186,8 +213,8 @@ namespace AdventOfCode2021.Days
                     var day1 = member1.Days[i];
                     var day2 = member2.Days[i];
 
-                    double minutes1 = Double.MaxValue;
-                    double minutes2 = Double.MaxValue;
+                    double minutes1 = double.MaxValue;
+                    double minutes2 = double.MaxValue;
 
                     if (day1.Part1.HasValue && day1.Part2.HasValue)
                     {
@@ -299,7 +326,7 @@ namespace AdventOfCode2021.Days
                 var scoresTotal = scoresDay1
                     .Union(scoresDay2)
                     .GroupBy(x => x.Id)
-                    .Select((x, index) =>
+                    .Select(x =>
                     {
                         var first = x.First();
 
@@ -345,7 +372,7 @@ namespace AdventOfCode2021.Days
             StringBuilder csvFile = new StringBuilder();
             csvFile.Append(";;");
 
-            for(int i = 0; i < 25; i++)
+            for (int i = 0; i < 25; i++)
             {
                 csvFile.Append($"Day {i + 1};;;;;;");
             }
@@ -353,7 +380,7 @@ namespace AdventOfCode2021.Days
             csvFile.AppendLine();
             csvFile.Append("Member;Total Score;");
 
-            for(int i = 0; i < 25; i++)
+            for (int i = 0; i < 25; i++)
             {
                 csvFile.Append("Part 1;;Part 2;;Difference;Total;");
             }

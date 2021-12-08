@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using AdventOfCode.Shared;
 
 namespace AdventOfCode2020.Days
 {

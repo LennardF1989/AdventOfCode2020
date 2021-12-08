@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using AdventOfCode.Shared;
 
 namespace AdventOfCode2020.Days
 {

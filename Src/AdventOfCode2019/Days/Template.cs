@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using AdventOfCode.Shared;
 
-namespace AdventOfCode2021.Days
+namespace AdventOfCode2019.Days
 {
     public static class Template
     {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AdventOfCode.Shared;
 
 namespace AdventOfCode2021.Days
 {

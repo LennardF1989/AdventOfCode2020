@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using AdventOfCode.Shared;
 
 namespace AdventOfCode2015.Days
 {

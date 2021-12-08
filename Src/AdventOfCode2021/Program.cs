@@ -1,4 +1,5 @@
 ﻿using System;
+using AdventOfCode.Shared;
 using AdventOfCode2021.Days;
 
 namespace AdventOfCode2021
