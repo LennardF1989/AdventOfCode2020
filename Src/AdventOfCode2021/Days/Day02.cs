@@ -41,7 +41,7 @@ namespace AdventOfCode2021.Days
                 }
             }
 
-            Logger.Info($"Answer 2A: {depth * horizontal}");
+            Logger.Info($"Day 2A: {depth * horizontal}");
         }
 
         public static void StartB()
@@ -81,7 +81,7 @@ namespace AdventOfCode2021.Days
                 }
             }
 
-            Logger.Info($"Answer 2B: {depth * horizontal}");
+            Logger.Info($"Day 2B: {depth * horizontal}");
         }
     }
 }

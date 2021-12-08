@@ -42,7 +42,7 @@ namespace AdventOfCode2021.Days
             int gammaRateInt = Convert.ToInt32(gammaRate.ToString(), 2);
             int epsiloneRateInt = Convert.ToInt32(epsilonRate.ToString(), 2);
 
-            Logger.Info($"Answer 3A: {gammaRateInt * epsiloneRateInt}");
+            Logger.Info($"Day 3A: {gammaRateInt * epsiloneRateInt}");
         }
 
         public static void StartB()
@@ -83,7 +83,7 @@ namespace AdventOfCode2021.Days
 
             int scrubberRate = Convert.ToInt32(loopValues[0], 2);
 
-            Logger.Info($"Answer 3B: {oxygenRate * scrubberRate}");
+            Logger.Info($"Day 3B: {oxygenRate * scrubberRate}");
         }
     }
 }

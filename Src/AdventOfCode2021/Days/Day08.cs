@@ -27,7 +27,7 @@ namespace AdventOfCode2021.Days
                 total += line.Count(x => x.Length == 2 || x.Length == 4 || x.Length == 3 || x.Length == 7);
             }
 
-            Logger.Info($"Answer 8A: {total}");
+            Logger.Info($"Day 8A: {total}");
         }
 
         public static void StartB()
@@ -117,7 +117,7 @@ namespace AdventOfCode2021.Days
                 total += int.Parse(output);
             }
 
-            Logger.Info($"Answer 8B: {total}");
+            Logger.Info($"Day 8B: {total}");
         }
     }
 }

@@ -28,7 +28,7 @@ namespace AdventOfCode2021.Days
                 previous = lines[i];
             }
 
-            Logger.Info($"Answer 1A: {increased}");
+            Logger.Info($"Day 1A: {increased}");
         }
 
         public static void StartB()
@@ -61,7 +61,7 @@ namespace AdventOfCode2021.Days
                 previous = depths[i];
             }
 
-            Logger.Info($"Answer 1B: {increased}");
+            Logger.Info($"Day 1B: {increased}");
         }
     }
 }

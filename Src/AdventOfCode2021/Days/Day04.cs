@@ -174,7 +174,7 @@ namespace AdventOfCode2021.Days
                 .GetUnmarkedNumbers()
                 .Sum();
 
-            Logger.Info($"Answer 4A: {sum * lastNumber}");
+            Logger.Info($"Day 4A: {sum * lastNumber}");
         }
 
         public static void StartB()
@@ -233,7 +233,7 @@ namespace AdventOfCode2021.Days
                 .GetUnmarkedNumbers()
                 .Sum();
 
-            Logger.Info($"Answer 4B: {sum * lastNumber}");
+            Logger.Info($"Day 4B: {sum * lastNumber}");
         }
     }
 }

@@ -43,7 +43,7 @@ namespace AdventOfCode2021.Days
                 }
             }
 
-            Logger.Info($"Answer 7A: {leastFuel}");
+            Logger.Info($"Day 7A: {leastFuel}");
         }
 
         public static void StartA2()
@@ -57,7 +57,7 @@ namespace AdventOfCode2021.Days
             int median = lines.OrderBy(x => x).ToList()[lines.Count / 2];
             int leastFuel = lines.Sum(x => Math.Abs(x - median));
 
-            Logger.Info($"Answer 7A: {leastFuel}");
+            Logger.Info($"Day 7A: {leastFuel}");
         }
 
         public static void StartB()
@@ -107,7 +107,7 @@ namespace AdventOfCode2021.Days
                 }
             }
 
-            Logger.Info($"Answer 7B: {leastFuel}");
+            Logger.Info($"Day 7B: {leastFuel}");
         }
 
         public static void StartB2()
@@ -136,7 +136,7 @@ namespace AdventOfCode2021.Days
                 return fuel * (fuel + 1) / 2;
             });
 
-            Logger.Info($"Answer 7B: {Math.Min(leastFuelLow, leastFuelHigh)}");
+            Logger.Info($"Day 7B: {Math.Min(leastFuelLow, leastFuelHigh)}");
         }
 
         public static void StartB3()
@@ -158,7 +158,7 @@ namespace AdventOfCode2021.Days
                 return fuel * (fuel + 1) / 2;
             });
 
-            Logger.Info($"Answer 7B: {leastFuel}");
+            Logger.Info($"Day 7B: {leastFuel}");
         }
     }
 }

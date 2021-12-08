@@ -12,7 +12,7 @@ namespace AdventOfCode2021.Days
             //var amount = GetOverlappingAmount("Content\\Day05_Test.txt", false);
             var amount = GetOverlappingAmount("Content\\Day05.txt", false);
 
-            Logger.Info($"Answer 5A: {amount}");
+            Logger.Info($"Day 5A: {amount}");
         }
 
         public static void StartB()
@@ -20,7 +20,7 @@ namespace AdventOfCode2021.Days
             //var amount = GetOverlappingAmount("Content\\Day05_Test.txt", true);
             var amount = GetOverlappingAmount("Content\\Day05.txt", true);
 
-            Logger.Info($"Answer 5B: {amount}");
+            Logger.Info($"Day 5B: {amount}");
         }
 
         private static int GetOverlappingAmount(string fileName, bool includeDiagonal)

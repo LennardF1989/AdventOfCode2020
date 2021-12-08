@@ -20,7 +20,7 @@ namespace AdventOfCode2021.Days
             //var amount = fishFast(lines, 18);
             var amount = fishFast(lines, 80);
 
-            Logger.Info($"Answer 6A: {amount}");
+            Logger.Info($"Day 6A: {amount}");
         }
 
         private static void fishSlow(List<int> lines, int days)
@@ -85,7 +85,7 @@ namespace AdventOfCode2021.Days
             //fishSlow(lines, 256);
             var amount = fishFast(lines, 256);
 
-            Logger.Info($"Answer 6B: {amount}");
+            Logger.Info($"Day 6B: {amount}");
         }
     }
 }
