@@ -45,6 +45,20 @@ namespace AdventOfCode2021.Days
             Logger.Info($"Answer 7A: {leastFuel}");
         }
 
+        public static void StartA2()
+        {
+            var lines = File
+                //.ReadAllLines("Content\\Day07_Test.txt")
+                .ReadAllLines("Content\\Day07.txt")
+                .SelectMany(x => x.Split(",").Select(int.Parse))
+                .ToList();
+
+            int median = lines.OrderBy(x => x).ToList()[lines.Count / 2];
+            int leastFuel = lines.Sum(x => Math.Abs(x - median));
+
+            Logger.Info($"Answer 7A: {leastFuel}");
+        }
+
         public static void StartB()
         {
             var lines = File
@@ -91,6 +105,57 @@ namespace AdventOfCode2021.Days
                     leastFuel = totalFuel;
                 }
             }
+
+            Logger.Info($"Answer 7B: {leastFuel}");
+        }
+
+        public static void StartB2()
+        {
+            var lines = File
+                //.ReadAllLines("Content\\Day07_Test.txt")
+                .ReadAllLines("Content\\Day07.txt")
+                .SelectMany(x => x.Split(",").Select(int.Parse))
+                .ToList();
+
+            float average = lines.Sum(x => x) / (float)lines.Count;
+            int lowAverage = (int)Math.Floor(average);
+            int highAverage = (int)Math.Ceiling(average);
+
+            int leastFuelLow = lines.Sum(x =>
+            {
+                int fuel = Math.Abs(x - lowAverage);
+
+                return fuel * (fuel + 1) / 2;
+            });
+
+            int leastFuelHigh = lines.Sum(x =>
+            {
+                int fuel = Math.Abs(x - highAverage);
+
+                return fuel * (fuel + 1) / 2;
+            });
+
+            Logger.Info($"Answer 7B: {Math.Min(leastFuelLow, leastFuelHigh)}");
+        }
+
+        public static void StartB3()
+        {
+            var lines = File
+                //.ReadAllLines("Content\\Day07_Test.txt")
+                .ReadAllLines("Content\\Day07.txt")
+                .SelectMany(x => x.Split(",").Select(int.Parse))
+                .ToList();
+
+            float average = lines.Sum(x => x) / (float)lines.Count;
+            float adjustAverageBy = (lines.Count - 2 * lines.Count(x => x < average)) / (float)(2 * lines.Count);
+            int adjustedAverage = (int) Math.Round(average + adjustAverageBy);
+
+            int leastFuel = lines.Sum(x =>
+            {
+                int fuel = Math.Abs(x - adjustedAverage);
+
+                return fuel * (fuel + 1) / 2;
+            });
 
             Logger.Info($"Answer 7B: {leastFuel}");
         }
