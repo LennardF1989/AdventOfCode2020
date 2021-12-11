@@ -42,10 +42,16 @@ namespace AdventOfCode2021
             Day09.StartA();
             Day09.StartB();
 
-            Logger.ShowDebug = true;
-
             Day10.StartA();
             Day10.StartB();
+            
+            Day11.StartA();
+            Day11.StartB();
+
+            Logger.ShowDebug = true;
+
+            Day12.StartA();
+            Day12.StartB();
 
             Console.ReadKey();
         }

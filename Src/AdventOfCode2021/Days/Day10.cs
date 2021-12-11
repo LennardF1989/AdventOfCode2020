@@ -40,7 +40,7 @@ namespace AdventOfCode2021.Days
 
                 int points = CheckLine(line, stack);
 
-                if (points != 0 || stack.Count <= 0)
+                if (points != 0 || stack.Count == 0)
                 {
                     continue;
                 }
