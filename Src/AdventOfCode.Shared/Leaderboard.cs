@@ -135,7 +135,7 @@ namespace AdventOfCode.Shared
             Logger.Debug(result);
 
             members = members
-                .Where(x => !x.IsAnonymous)
+                //.Where(x => !x.IsAnonymous)
                 .ToList();
 
             result = ExportLocalScoreboardOriginal(members);
