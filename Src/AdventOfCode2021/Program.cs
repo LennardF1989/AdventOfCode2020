@@ -35,7 +35,7 @@ namespace AdventOfCode2021
             Day07.StartB();
             Day07.StartB2();
             Day07.StartB3();
-            
+
             Day08.StartA();
             Day08.StartB();
 
@@ -44,17 +44,19 @@ namespace AdventOfCode2021
 
             Day10.StartA();
             Day10.StartB();
-            
+
             Day11.StartA();
             Day11.StartB();
 
             Day12.StartA();
             Day12.StartB();
 
+            Day13.Start();
+
             Logger.ShowDebug = true;
 
-            Day13.StartA();
-            Day13.StartB();
+            Day14.StartA();
+            Day14.StartB();
 
             Console.ReadKey();
         }
