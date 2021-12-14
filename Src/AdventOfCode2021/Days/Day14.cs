@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AdventOfCode.Shared;
@@ -78,8 +79,8 @@ namespace AdventOfCode2021.Days
         public static void StartB()
         {
             var lines = File
-                    .ReadAllText("Content\\Day14_Test.txt")
-                    //.ReadAllText("Content\\Day14.txt")
+                    //.ReadAllText("Content\\Day14_Test.txt")
+                    .ReadAllText("Content\\Day14.txt")
                     .Split("\r\n\r\n")
                 ;
 
@@ -90,45 +91,173 @@ namespace AdventOfCode2021.Days
                 .Select(x => x.Split(" -> "))
                 .ToDictionary(x => (x[0][0], x[0][1]), x => x[1]);
 
-            int answer = RunStep2(polymerTemplate, rules, 40);
+            //long answer = RunStep2(polymerTemplate, rules, 40);
+            long answer = RunStep3(polymerTemplate, rules, 40);
 
             Logger.Info($"Day 14B: {answer}");
         }
 
-        private static int RunStep2(string polymerTemplate, Dictionary<(char, char), string> rules, int maxStep)
+        //Disclaimer: I got a lot of hints for this solution
+        private static long RunStep2(string polymerTemplate, Dictionary<(char, char), string> rules, int maxStep)
         {
-            var list = polymerTemplate.ToList();
+            var pairs = new Dictionary<(char, char), long>();
 
-            //Logger.Debug($"Template: {string.Join("", list)}");
-
-            var chars = new Dictionary<char, int>();
-
-            list = RunStep(list, rules, 1, 10);
-
-            for (int i = 0; i < (list.Count / 2) + 1; i++)
+            for (int i = 0; i < polymerTemplate.Length - 1; i++)
             {
-                var toProcess = list
-                    .Skip(i)
-                    .Take(2)
-                    .ToList();
+                var pair = (polymerTemplate[i], polymerTemplate[i + 1]);
 
-                var listCopy = RunStep(toProcess, rules, 11, maxStep);
-
-                var charsCopy = listCopy
-                    .GroupBy(x => x)
-                    .ToList();
-
-                charsCopy.ForEach(x =>
+                if (pairs.ContainsKey(pair))
                 {
-                    if (chars.ContainsKey(x.Key))
+                    pairs[pair]++;
+                }
+                else
+                {
+                    pairs.Add(pair, 1);
+                }
+            }
+
+            for (int i = 0; i < maxStep; i++)
+            {
+                var tempPairs = new Dictionary<(char, char), long>();
+
+                while (pairs.Count > 0)
+                {
+                    var kvp = pairs.First();
+
+                    var a = kvp.Key.Item1;
+                    var b = kvp.Key.Item2;
+
+                    pairs.Remove(kvp.Key);
+
+                    if (rules.ContainsKey(kvp.Key))
                     {
-                        chars[x.Key] += x.Count();
+                        var c = rules[kvp.Key][0];
+
+                        if (tempPairs.ContainsKey((a, c)))
+                        {
+                            tempPairs[(a, c)] += kvp.Value;
+                        }
+                        else
+                        {
+                            tempPairs.Add((a, c), kvp.Value);
+                        }
+
+                        if (tempPairs.ContainsKey((c, b)))
+                        {
+                            tempPairs[(c, b)] += kvp.Value;
+                        }
+                        else
+                        {
+                            tempPairs.Add((c, b), kvp.Value);
+                        }
                     }
                     else
                     {
-                        chars.Add(x.Key, x.Count());
+                        tempPairs[kvp.Key] = kvp.Value;
+                    }
+                }
+
+                pairs = tempPairs;
+            }
+
+            var chars = new Dictionary<char, double>();
+
+            pairs
+                .SelectMany(x =>
+                {
+                    return new[]
+                    {
+                        (x.Key.Item1, x.Value),
+                        (x.Key.Item2, x.Value)
+                    };
+                })
+                .ToList()
+                .ForEach(x =>
+                {
+                    if (chars.ContainsKey(x.Item1))
+                    {
+                        chars[x.Item1] += x.Value / 2.0;
+                    }
+                    else
+                    {
+                        chars.Add(x.Item1, x.Value / 2.0);
                     }
                 });
+
+            var min = chars.Min(x => x.Value);
+            var max = chars.Max(x => x.Value);
+
+            //NOTE: This is technically incorrect, but works for my input.
+            return (long)Math.Floor(max - min);
+        }
+
+        //Disclaimer: A little bit of mine and a little bit of Reddit
+        private static long RunStep3(string polymerTemplate, Dictionary<(char, char), string> rules, int maxStep)
+        {
+            var pairs = new Dictionary<(char, char), long>();
+
+            for (int i = 0; i < polymerTemplate.Length - 1; i++)
+            {
+                var pair = (polymerTemplate[i], polymerTemplate[i + 1]);
+
+                if (pairs.ContainsKey(pair))
+                {
+                    pairs[pair]++;
+                }
+                else
+                {
+                    pairs.Add(pair, 1);
+                }
+            }
+
+            var chars = polymerTemplate
+                .GroupBy(x => x)
+                .ToDictionary(x => x.Key, x => (long)x.Count());
+
+            for (int i = 0; i < maxStep; i++)
+            {
+                var tempPairs = new Dictionary<(char, char), long>();
+
+                foreach (var pair in pairs)
+                {
+                    if (!rules.ContainsKey(pair.Key))
+                    {
+                        continue;
+                    }
+
+                    char a = pair.Key.Item1;
+                    char c = rules[pair.Key][0];
+                    char b = pair.Key.Item2;
+
+                    if (tempPairs.ContainsKey((a, c)))
+                    {
+                        tempPairs[(a, c)] += pair.Value;
+                    }
+                    else
+                    {
+                        tempPairs.Add((a, c), pair.Value);
+                    }
+
+                    if (tempPairs.ContainsKey((c, b)))
+                    {
+                        tempPairs[(c, b)] += pair.Value;
+                    }
+                    else
+                    {
+                        tempPairs.Add((c, b), pair.Value);
+                    }
+
+                    if(chars.ContainsKey(c))
+                    {
+                        chars[c] += pair.Value;
+                    }
+                    else
+                    {
+                        chars[c] = pair.Value;
+                    }
+                }
+
+                pairs = tempPairs;
             }
 
             var min = chars.Min(x => x.Value);
