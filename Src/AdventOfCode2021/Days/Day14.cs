@@ -79,8 +79,8 @@ namespace AdventOfCode2021.Days
         public static void StartB()
         {
             var lines = File
-                    //.ReadAllText("Content\\Day14_Test.txt")
-                    .ReadAllText("Content\\Day14.txt")
+                    .ReadAllText("Content\\Day14_Test.txt")
+                    //.ReadAllText("Content\\Day14.txt")
                     .Split("\r\n\r\n")
                 ;
 
