@@ -9,50 +9,39 @@ namespace AdventOfCode2021.Days
     public static class Day16
     {
         private static long _versions;
-        
+
         public static void Start()
         {
-            var lines = File
-                //.ReadAllLines("Content\\Day16_Test.txt")
-                .ReadAllLines("Content\\Day16.txt")
-                .Select(StringToByteArray)
+            var testLines = File
+                .ReadAllLines("Content\\Day16_Test.txt")
+                .Select(x =>
+                {
+                    var split = x.Split("=");
+
+                    return (input: StringToByteArray(split[0]), expected: int.Parse(split[1]));
+                })
                 .ToList();
 
-            var bits = new List<int>();
-
-            foreach (var line in lines)
+            foreach (var testLine in testLines)
             {
-                foreach (var b in line)
-                {
-                    var b0 = (b >> 0) & 1;
-                    var b1 = (b >> 1) & 1;
-                    var b2 = (b >> 2) & 1;
-                    var b3 = (b >> 3) & 1;
-                    var b4 = (b >> 4) & 1;
-                    var b5 = (b >> 5) & 1;
-                    var b6 = (b >> 6) & 1;
-                    var b7 = (b >> 7) & 1;
+                var testBits = ByteArrayToBitsArray(testLine.input);
+                var actual  = ReadPacket(testBits, out _);
 
-                    //NOTE: Reverse the order
-                    bits.Add(b7);
-                    bits.Add(b6);
-                    bits.Add(b5);
-                    bits.Add(b4);
-                    bits.Add(b3);
-                    bits.Add(b2);
-                    bits.Add(b1);
-                    bits.Add(b0);
-                }
+                Logger.Debug($"{testLine.expected} == {actual} => {actual == testLine.expected}");
             }
 
-            //57340821780 is too low
-            var answer = ReadPacket(bits.ToArray(), out _);
+            var lines = StringToByteArray(
+                File.ReadAllText("Content\\Day16.txt")
+            );
+
+            var bits = ByteArrayToBitsArray(lines);
+            var answer = ReadPacket(bits, out _);
 
             Logger.Info($"Day 16A: {_versions}");
             Logger.Info($"Day 16B: {answer}");
         }
 
-        private static long ReadPacket(int[] bits, out int consumedOffset)
+        private static long ReadPacket(byte[] bits, out int consumedOffset)
         {
             int offset = 0;
 
@@ -103,7 +92,7 @@ namespace AdventOfCode2021.Days
 
                 for (var p = 0; p < length; p++)
                 {
-                    var result = ReadPacket(bits.Skip(offset).ToArray(),  out var literalOffset);
+                    var result = ReadPacket(bits.Skip(offset).ToArray(), out var literalOffset);
                     offset += literalOffset;
 
                     results.Add(result);
@@ -112,31 +101,20 @@ namespace AdventOfCode2021.Days
 
             consumedOffset = offset;
 
-            switch (packetType)
+            return packetType switch
             {
-                //Sum
-                case 0:
-                    return results.Sum();
-                case 1:
-                {
-                    return results.Aggregate(1L, (current, i) => current * i);
-                }
-                case 2:
-                    return results.Min();
-                case 3:
-                    return results.Max();
-                case 5:
-                    return results[0] > results[1] ? 1 : 0;
-                case 6:
-                    return results[0] < results[1] ? 1 : 0;
-                case 7:
-                    return results[0] == results[1] ? 1 : 0;
-                default:
-                    return 0;
-            }
+                0 => results.Sum(),
+                1 => results.Aggregate(1L, (a, b) => a * b),
+                2 => results.Min(),
+                3 => results.Max(),
+                5 => results[0] > results[1] ? 1 : 0,
+                6 => results[0] < results[1] ? 1 : 0,
+                7 => results[0] == results[1] ? 1 : 0,
+                _ => 0
+            };
         }
 
-        private static int GetInt(int[] bits)
+        private static int GetInt(byte[] bits)
         {
             int result = 0;
 
@@ -148,10 +126,10 @@ namespace AdventOfCode2021.Days
             return result;
         }
 
-        private static long GetLiteralValue(int[] bits, out int consumedOffset)
+        private static long GetLiteralValue(byte[] bits, out int consumedOffset)
         {
             int offset = 0;
-            List<long> groups = new List<long>();
+            long value = 0;
 
             bool hasMoreGroups;
             do
@@ -162,27 +140,42 @@ namespace AdventOfCode2021.Days
                 var group = GetInt(bits.Skip(offset).Take(4).ToArray());
                 offset += 4;
 
-                groups.Add(group);
+                value = value << 4 | (uint)group;
             } while (hasMoreGroups);
-
-            long value = 0;
-
-            foreach (var group in groups)
-            {
-                value = value << 4 | group;
-            }
 
             consumedOffset = offset;
 
             return value;
         }
 
-        public static byte[] StringToByteArray(string hex)
+        private static byte[] StringToByteArray(string hex)
         {
             return Enumerable.Range(0, hex.Length)
                 .Where(x => x % 2 == 0)
                 .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
                 .ToArray();
+        }
+
+        private static byte[] ByteArrayToBitsArray(byte[] bytes)
+        {
+            var bits = new byte[bytes.Length * 8];
+
+            for (var i = 0; i < bytes.Length; i++)
+            {
+                var b = bytes[i];
+
+                //NOTE: Reverse the order
+                bits[i * 8 + 0] = (byte)((b >> 7) & 1);
+                bits[i * 8 + 1] = (byte)((b >> 6) & 1);
+                bits[i * 8 + 2] = (byte)((b >> 5) & 1);
+                bits[i * 8 + 3] = (byte)((b >> 4) & 1);
+                bits[i * 8 + 4] = (byte)((b >> 3) & 1);
+                bits[i * 8 + 5] = (byte)((b >> 2) & 1);
+                bits[i * 8 + 6] = (byte)((b >> 1) & 1);
+                bits[i * 8 + 7] = (byte)((b >> 0) & 1);
+            }
+
+            return bits;
         }
     }
 }
