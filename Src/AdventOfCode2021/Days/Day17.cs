@@ -11,8 +11,8 @@ namespace AdventOfCode2021.Days
         public static void Start()
         {
             var lines = File
-                .ReadAllText("Content\\Day17_Test.txt")
-                //.ReadAllText("Content\\Day17.txt")
+                //.ReadAllText("Content\\Day17_Test.txt")
+                .ReadAllText("Content\\Day17.txt")
                 .Split(":")[1]
                 .Split(",")
                 .ToList();
