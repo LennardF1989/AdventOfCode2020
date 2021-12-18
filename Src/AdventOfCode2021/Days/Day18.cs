@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using AdventOfCode.Shared;
 
 namespace AdventOfCode2021.Days
@@ -56,15 +57,15 @@ namespace AdventOfCode2021.Days
 
             public override Node Clone(Node parent)
             {
-               var pairNode = new PairNode(null, null)
-               {
-                   Parent = parent
-               };
+                var pairNode = new PairNode(null, null)
+                {
+                    Parent = parent
+                };
 
-               pairNode.Left = Left.Clone(pairNode);
-               pairNode.Right = Right.Clone(pairNode);
+                pairNode.Left = Left.Clone(pairNode);
+                pairNode.Right = Right.Clone(pairNode);
 
-               return pairNode;
+                return pairNode;
             }
 
             public override string ToString()
@@ -182,6 +183,31 @@ namespace AdventOfCode2021.Days
             Logger.Info($"Day 18A: {answer}");
         }
 
+        public static void StartA2()
+        {
+            var lines = File.ReadAllLines("Content\\Day18.txt");
+            var trees = new Queue<string>();
+
+            foreach (var line in lines)
+            {
+                var reducedExpression = ReduceExpression(line);
+
+                trees.Enqueue(reducedExpression);
+            }
+
+            var currentExpression = trees.Dequeue();
+
+            while (trees.Count > 0)
+            {
+                var expression = $"[{currentExpression},{trees.Dequeue()}]";
+                currentExpression = ReduceExpression(expression);
+            }
+
+            var answer = ReduceToMagnitude(currentExpression);
+
+            Logger.Info($"Day 18A: {answer}");
+        }
+
         public static void StartB()
         {
             var lines = File
@@ -217,7 +243,7 @@ namespace AdventOfCode2021.Days
                     {
                         expandedTree = ApplySnailfishLogic(expandedTree.Item1);
                     } while (expandedTree.Item2);
-                    
+
                     (Node, bool) magnitudeTree = (expandedTree.Item1, false);
                     do
                     {
@@ -227,6 +253,35 @@ namespace AdventOfCode2021.Days
                     var finalTree = magnitudeTree.Item1;
 
                     var magnitude = ((LiteralNode)finalTree).Value;
+
+                    if (magnitude > largestMagnitude)
+                    {
+                        largestMagnitude = magnitude;
+                    }
+                }
+            }
+
+            Logger.Info($"Day 18B: {largestMagnitude}");
+        }
+
+        public static void StartB2()
+        {
+            var lines = File.ReadAllLines("Content\\Day18.txt");
+
+            var largestMagnitude = 0;
+
+            foreach (var leftTree in lines)
+            {
+                foreach (var rightTree in lines)
+                {
+                    if (leftTree == rightTree)
+                    {
+                        continue;
+                    }
+
+                    var expression = $"[{leftTree},{rightTree}]";
+                    expression = ReduceExpression(expression);
+                    var magnitude = ReduceToMagnitude(expression);
 
                     if (magnitude > largestMagnitude)
                     {
@@ -542,6 +597,110 @@ namespace AdventOfCode2021.Days
         private static int OperatorPrecedence(char c)
         {
             return c == ',' ? 1 : 0;
+        }
+
+        private static string ReduceExpression(string expression)
+        {
+        reset:
+            //Find pair at 4 deep
+            int depth = 0;
+
+            for (var i = 0; i < expression.Length; i++)
+            {
+                var c = expression[i];
+
+                if (c == '[')
+                {
+                    depth++;
+
+                    if (depth > 4)
+                    {
+                        var endIndex = expression.IndexOf(']', i);
+                        var pair = expression
+                            .Substring(i + 1, endIndex - i - 1)
+                            .Split(",")
+                            .Select(int.Parse)
+                            .ToArray();
+
+                        var leftSide = expression.Substring(0, i);
+                        var rightSide = expression.Substring(endIndex + 1);
+
+                        var digits = Regex.Matches(leftSide, "\\d+").LastOrDefault();
+
+                        if (digits != null)
+                        {
+                            var value = int.Parse(leftSide.Substring(digits.Index, digits.Length)) + pair[0];
+
+                            leftSide = leftSide.Substring(0, digits.Index)
+                                       + value
+                                       + leftSide.Substring(digits.Index + digits.Length);
+                        }
+
+                        digits = Regex.Matches(rightSide, "\\d+").FirstOrDefault();
+
+                        if (digits != null)
+                        {
+                            var value = int.Parse(rightSide.Substring(digits.Index, digits.Length)) + pair[1];
+
+                            rightSide = rightSide.Substring(0, digits.Index)
+                                        + value
+                                        + rightSide.Substring(digits.Index + digits.Length);
+                        }
+
+                        expression = leftSide + "0" + rightSide;
+
+                        goto reset;
+                    }
+                }
+                else if (c == ']')
+                {
+                    depth--;
+                }
+            }
+
+            //Split a literal higher than 9
+            {
+                var digits = Regex.Matches(expression, "\\d+");
+
+                foreach (Match digit in digits)
+                {
+                    int value = int.Parse(digit.Value);
+
+                    if (value > 9)
+                    {
+                        var leftSide = expression.Substring(0, digit.Index);
+                        var rightSide = expression.Substring(digit.Index + digit.Length);
+
+                        int left = (int)Math.Floor(value / 2f);
+                        int right = (int)Math.Ceiling(value / 2f);
+
+                        expression = leftSide + $"[{left},{right}]" + rightSide;
+
+                        goto reset;
+                    }
+                }
+            }
+
+            return expression;
+        }
+
+        private static int ReduceToMagnitude(string expression)
+        {
+            while (true)
+            {
+                var pair = Regex.Match(expression, "\\[(\\d+),(\\d+)\\]");
+
+                if (!pair.Success)
+                {
+                    return int.Parse(expression);
+                }
+
+                int left = int.Parse(pair.Groups[1].Value);
+                int right = int.Parse(pair.Groups[2].Value);
+                int magnitude = left * 3 + right * 2;
+
+                expression = expression.Substring(0, pair.Index) + magnitude + expression.Substring(pair.Index + pair.Length);
+            }
         }
     }
 }
