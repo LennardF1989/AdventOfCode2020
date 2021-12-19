@@ -10,6 +10,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Content\Day19_Test.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Content\Day19.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
