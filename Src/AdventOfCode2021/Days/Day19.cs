@@ -23,6 +23,7 @@ namespace AdventOfCode2021.Days
         }
 
         //Source: https://stackoverflow.com/questions/54496824/how-to-compute-all-orientations-of-a-cube-by-rotating-without-repeating-orienta
+        //Source: https://math.stackexchange.com/questions/3165534/what-are-all-possible-orientations-of-the-platonic-solids
         private static readonly EAxis[] _rotationAxis =
         {
             EAxis.X,
