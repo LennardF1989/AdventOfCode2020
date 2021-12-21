@@ -396,12 +396,22 @@ namespace AdventOfCode.Shared
 
                 csvFile.Append($"{kvp.Value};");
 
-                foreach (var scoreboardEntry in scoreboardEntriesPerMember[memberId])
+                int dayCount = 0;
+                foreach (var scoreboardEntry in scoreboardEntriesPerMember[memberId].OrderBy(x => x.DayIndex))
                 {
+                    while (scoreboardEntry.DayIndex > dayCount)
+                    {
+                        csvFile.Append(";;;;;;");
+
+                        dayCount++;
+                    }
+
                     csvFile.Append($"{scoreboardEntry.DatePart1?.ToString("g") ?? string.Empty};{scoreboardEntry.ScorePart1};");
                     csvFile.Append($"{scoreboardEntry.DatePart2?.ToString("g") ?? string.Empty};{scoreboardEntry.ScorePart2};");
                     csvFile.Append($"{scoreboardEntry.Minutes?.ToString("F2") ?? string.Empty};");
                     csvFile.Append($"{scoreboardEntry.ScorePart1 + scoreboardEntry.ScorePart2};");
+
+                    dayCount++;
                 }
 
                 csvFile.AppendLine();
