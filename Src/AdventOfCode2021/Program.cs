@@ -77,7 +77,7 @@ namespace AdventOfCode2021
             //Day21.StartB();
 
             //Day22.StartA();
-            //Day22.StartB();
+            Day22.StartB();
 
             Logger.ShowDebug = true;
 

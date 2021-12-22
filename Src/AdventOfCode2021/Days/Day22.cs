@@ -166,8 +166,8 @@ namespace AdventOfCode2021.Days
                         continue;
                     }
 
-                    //var splitCubes1 = incomingCube.Split(thisCube);
-                    var splitCubes = incomingCube.Split2(thisCube);
+                    var splitCubes = incomingCube.Split(thisCube);
+                    //var splitCubes = incomingCube.Split2(thisCube);
                     newCubes.AddRange(splitCubes);
                 }
 
@@ -195,8 +195,8 @@ namespace AdventOfCode2021.Days
                     continue;
                 }
 
-                //var splitCubes1 = thisCube.Split(cuboid);
-                var splitCubes = thisCube.Split2(cuboid);
+                var splitCubes = thisCube.Split(cuboid);
+                //var splitCubes = thisCube.Split2(cuboid);
                 newCubes.AddRange(splitCubes);
             }
 
@@ -272,7 +272,6 @@ namespace AdventOfCode2021.Days
             };
         }
 
-        //Disclaimer: My version is bugged, so I took inspiration from someone else instead.
         public List<Cuboid> Split(Cuboid other)
         {
             var result = Intersection(other);
@@ -293,7 +292,7 @@ namespace AdventOfCode2021.Days
                 (result.MinX, result.MaxY, MinZ       , result.MaxX, MaxY       , result.MinZ),
                 (result.MaxX, MinY       , MinZ       , MaxX       , result.MinY, result.MinZ),
                 (result.MaxX, result.MinY, MinZ       , MaxX       , result.MaxY, result.MinZ),
-                (result.MaxX, result.MinZ, MinZ       , MaxX       , MaxY       , result.MinZ),
+                (result.MaxX, result.MaxY, MinZ       , MaxX       , MaxY       , result.MinZ),
                 //Middle
                 (MinX       , MinY       , result.MinZ, result.MinX, result.MinY, result.MaxZ),
                 (MinX       , result.MinY, result.MinZ, result.MinX, result.MaxY, result.MaxZ),
@@ -303,7 +302,7 @@ namespace AdventOfCode2021.Days
                 (result.MinX, result.MaxY, result.MinZ, result.MaxX, MaxY       , result.MaxZ),
                 (result.MaxX, MinY       , result.MinZ, MaxX       , result.MinY, result.MaxZ),
                 (result.MaxX, result.MinY, result.MinZ, MaxX       , result.MaxY, result.MaxZ),
-                (result.MaxX, result.MinZ, result.MinZ, MaxX       , MaxY       , result.MaxZ),
+                (result.MaxX, result.MaxY, result.MinZ, MaxX       , MaxY       , result.MaxZ),
                 //Top
                 (MinX       , MinY       , result.MaxZ, result.MinX, result.MinY, MaxZ),
                 (MinX       , result.MinY, result.MaxZ, result.MinX, result.MaxY, MaxZ),
@@ -313,7 +312,7 @@ namespace AdventOfCode2021.Days
                 (result.MinX, result.MaxY, result.MaxZ, result.MaxX, MaxY       , MaxZ),
                 (result.MaxX, MinY       , result.MaxZ, MaxX       , result.MinY, MaxZ),
                 (result.MaxX, result.MinY, result.MaxZ, MaxX       , result.MaxY, MaxZ),
-                (result.MaxX, result.MinZ, result.MaxZ, MaxX       , MaxY       , MaxZ),
+                (result.MaxX, result.MaxY, result.MaxZ, MaxX       , MaxY       , MaxZ),
             };
 
             var cuboids = vertices
@@ -334,6 +333,7 @@ namespace AdventOfCode2021.Days
                 : null;
         }
 
+        //Disclaimer: This version is inspired by someone else.
         public List<Cuboid> Split2(Cuboid other)
         {
             var newCubes = new List<Cuboid>();
@@ -360,7 +360,11 @@ namespace AdventOfCode2021.Days
                             MaxZ = cutsZ[z + 1]
                         };
 
-                        if (Contains(newCube) && !other.Contains(newCube))
+                        if (newCube.Width != 0 && 
+                            newCube.Depth != 0 && 
+                            newCube.Height != 0 &&
+                            Contains(newCube) && 
+                            !other.Contains(newCube))
                         {
                             newCubes.Add(newCube);
                         }
