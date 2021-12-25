@@ -11,83 +11,82 @@ namespace AdventOfCode2021
             Logger.ShowDebug = false;
 
             Leaderboard.Start();
-            
-            //Day01.StartA();
-            //Day01.StartB();
 
-            //Day02.StartA();
-            //Day02.StartB();
+            Day01.StartA();
+            Day01.StartB();
 
-            //Day03.StartA();
-            //Day03.StartB();
+            Day02.StartA();
+            Day02.StartB();
 
-            //Day04.StartA();
-            //Day04.StartB();
+            Day03.StartA();
+            Day03.StartB();
 
-            //Day05.StartA();
-            //Day05.StartB();
+            Day04.StartA();
+            Day04.StartB();
 
-            //Day06.StartA();
-            //Day06.StartB();
+            Day05.StartA();
+            Day05.StartB();
 
-            //Day07.StartA();
-            //Day07.StartA2();
-            //Day07.StartB();
-            //Day07.StartB2();
-            //Day07.StartB3();
+            Day06.StartA();
+            Day06.StartB();
 
-            //Day08.StartA();
-            //Day08.StartB();
+            Day07.StartA();
+            Day07.StartA2();
+            Day07.StartB();
+            Day07.StartB2();
+            Day07.StartB3();
 
-            //Day09.StartA();
-            //Day09.StartB();
+            Day08.StartA();
+            Day08.StartB();
 
-            //Day10.StartA();
-            //Day10.StartB();
+            Day09.StartA();
+            Day09.StartB();
 
-            //Day11.StartA();
-            //Day11.StartB();
+            Day10.StartA();
+            Day10.StartB();
 
-            //Day12.StartA();
-            //Day12.StartB();
+            Day11.StartA();
+            Day11.StartB();
 
-            //Day13.Start();
+            Day12.StartA();
+            Day12.StartB();
 
-            //Day14.StartA();
-            //Day14.StartB();
+            Day13.Start();
 
-            //Day15.StartA();
-            //Day15.StartB();
+            Day14.StartA();
+            Day14.StartB();
 
-            //Day16.Start();
+            Day15.StartA();
+            Day15.StartB();
 
-            //Day17.Start();
+            Day16.Start();
 
-            //Day18.StartTest();
-            //Day18.StartA();
-            //Day18.StartA2();
-            //Day18.StartB();
-            //Day18.StartB2();
+            Day17.Start();
 
-            //Day19.Start();
+            Day18.StartTest();
+            Day18.StartA();
+            Day18.StartA2();
+            Day18.StartB();
+            Day18.StartB2();
 
-            //Day20.Start();
+            Day19.Start();
 
-            //Day21.StartA();
-            //Day21.StartB();
+            Day20.Start();
 
-            //Day22.StartA();
-            //Day22.StartB();
+            Day21.StartA();
+            Day21.StartB();
 
-            //Day23.StartA();
-            //Day23.StartB();
+            Day22.StartA();
+            Day22.StartB();
 
-            //Day24.Start();
+            Day23.StartA();
+            Day23.StartB();
+
+            Day24.Start();
+
+            Day25.Start();
 
             Logger.ShowDebug = true;
-
-            Day25.StartA();
-            Day25.StartB();
 
             Console.ReadKey();
         }
