@@ -59,10 +59,14 @@ namespace AdventOfCode.Shared
             [JsonProperty("mergeMapping")]
             public Dictionary<string, string> MergeMapping { get; set; }
 
+            [JsonProperty("allowAnonymous")]
+            public bool AllowAnonymous { get; set; }
+
             public LeaderboardSettings()
             {
                 IdMapping = new Dictionary<string, string>();
                 MergeMapping = new Dictionary<string, string>();
+                AllowAnonymous = false;
             }
         }
 
@@ -135,7 +139,7 @@ namespace AdventOfCode.Shared
             Logger.Debug(result);
 
             members = members
-                //.Where(x => !x.IsAnonymous)
+                .Where(x => leaderboardSettings.AllowAnonymous || !x.IsAnonymous)
                 .ToList();
 
             result = ExportLocalScoreboardOriginal(members);
