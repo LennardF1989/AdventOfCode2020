@@ -12,10 +12,15 @@ namespace AdventOfCode2022
 
             Leaderboard.Start();
 
+            //if(false)
+            {
+                Day01.Start();
+            }
+
             Logger.ShowDebug = true;
 
-            Day01.StartA();
-            Day01.StartB();
+            Day02.StartA();
+            Day02.StartB();
 
             Console.ReadKey();
         }

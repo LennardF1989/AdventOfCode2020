@@ -1,32 +1,46 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using AdventOfCode.Shared;
 
 namespace AdventOfCode2022.Days
 {
     public static class Day01
     {
-        public static void StartA()
+        public static void Start()
         {
             var lines = File
-                .ReadAllLines("Content\\Day01_Test.txt")
-                //.ReadAllLines("Content\\Day01.txt")
+                //.ReadAllLines("Content\\Day01_Test.txt")
+                .ReadAllLines("Content\\Day01.txt")
                 ;
 
-            int answer = 0;
+            List<int> elfs = new List<int>();
+            int currentTotal = 0;
+
+            foreach (var line in lines)
+            {
+                if (string.IsNullOrEmpty(line))
+                {
+                    elfs.Add(currentTotal);
+                    currentTotal = 0;
+
+                    continue;
+                }
+
+                var value = int.Parse(line);
+
+                currentTotal += value;
+            }
+
+            elfs.Add(currentTotal);
+
+            int answer = elfs.Max();
 
             Logger.Info($"Day 1A: {answer}");
-        }
 
-        public static void StartB()
-        {
-            var lines = File
-                .ReadAllLines("Content\\Day01_Test.txt")
-                //.ReadAllLines("Content\\Day01.txt")
-                ;
+            int topThree = elfs.OrderByDescending(x => x).Take(3).Sum();
 
-            int answer = 0;
-
-            Logger.Info($"Day 1B: {answer}");
+            Logger.Info($"Day 1B: {topThree}");
         }
     }
 }
