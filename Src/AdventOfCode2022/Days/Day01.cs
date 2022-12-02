@@ -14,8 +14,8 @@ namespace AdventOfCode2022.Days
                 .ReadAllLines("Content\\Day01.txt")
                 ;
 
-            List<int> elfs = new List<int>();
-            int currentTotal = 0;
+            var elfs = new List<int>();
+            var currentTotal = 0;
 
             foreach (var line in lines)
             {
@@ -34,11 +34,11 @@ namespace AdventOfCode2022.Days
 
             elfs.Add(currentTotal);
 
-            int answer = elfs.Max();
+            var answer = elfs.Max();
 
             Logger.Info($"Day 1A: {answer}");
 
-            int topThree = elfs.OrderByDescending(x => x).Take(3).Sum();
+            var topThree = elfs.OrderByDescending(x => x).Take(3).Sum();
 
             Logger.Info($"Day 1B: {topThree}");
         }
