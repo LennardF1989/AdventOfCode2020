@@ -31,6 +31,12 @@
     <None Update="Content\Day01_Test.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Content\Day06.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Day06_Test.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Content\Leaderboard_Settings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
