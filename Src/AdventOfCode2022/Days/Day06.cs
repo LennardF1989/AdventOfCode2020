@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using AdventOfCode.Shared;
 
 namespace AdventOfCode2022.Days
@@ -30,7 +32,7 @@ namespace AdventOfCode2022.Days
 
             foreach (var packet in packets)
             {
-                var answer = FindStartOfMessageMarker(packet, 14);
+                var answer = FindStartOfMessageMarker2(packet, 14);
 
                 Logger.Info($"Day 6B: {answer}");
             }
@@ -56,6 +58,20 @@ namespace AdventOfCode2022.Days
                 if (queue.Count == length)
                 {
                     queue.Dequeue();
+                }
+            }
+
+            return -1;
+        }
+
+        //NOTE: Alternative version - Slower
+        private static int FindStartOfMessageMarker2(string packet, int length)
+        {
+            for (var i = 0; i < packet.Length; i++)
+            {
+                if (packet.Skip(i).Take(length).ToHashSet().Count == length)
+                {
+                    return i + 1;
                 }
             }
 
