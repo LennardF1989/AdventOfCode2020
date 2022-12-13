@@ -15,6 +15,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode.Shared", "Src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2022", "Src\AdventOfCode2022\AdventOfCode2022.csproj", "{8E9BEDEF-48E3-4566-A041-CA8E370AE918}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{9594ECD3-AE0F-4A67-9288-995745F88441}"
+	ProjectSection(SolutionItems) = preProject
+		Glossary.md = Glossary.md
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
