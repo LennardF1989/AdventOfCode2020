@@ -1,5 +1,9 @@
-﻿using System;
+﻿#pragma warning disable CA1416
+
+using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,6 +20,13 @@ namespace AdventOfCode2022.Days
             Sand
         }
 
+        private const int FontSize = 6;
+        private static readonly Font _font = new("Consolas", FontSize, FontStyle.Regular, GraphicsUnit.Pixel);
+        private static readonly Brush _whiteBrush = new SolidBrush(Color.White);
+        private static readonly Brush _goldBrush = new SolidBrush(Color.Gold);
+        private static readonly Brush _greyBrush = new SolidBrush(Color.LightGray);
+        private static int _frameCount;
+
         public static void StartA()
         {
             var lines = File
@@ -25,10 +36,10 @@ namespace AdventOfCode2022.Days
                     .ToList()
                     ;
 
-            var(minX, maxX, minY, maxY) = DetermineGridDimensions(lines);
+            var(minX, maxX, _, maxY) = DetermineGridDimensions(lines);
 
             //NOTE: Always 0
-            minY = 0;
+            var minY = 0;
 
             var grid = GenerateGrid(lines, minX, maxX, minY, maxY);
 
@@ -36,12 +47,16 @@ namespace AdventOfCode2022.Days
             var count = 0;
             bool repeat;
 
+            //Directory.CreateDirectory("Output/Day14/A");
+            //_frameCount = 0;
+
             do
             {
                 count++;
 
                 repeat = SimulateSand(sandSource, grid);
                 //DrawGrid(grid, minX, minY);
+                //RenderGrid(grid, minX, minY, "Output/Day14/A");
             } while (!repeat);
             
             var answer = count - 1;
@@ -58,10 +73,12 @@ namespace AdventOfCode2022.Days
                     .ToList()
                 ;
 
-            var (minX, maxX, minY, maxY) = DetermineGridDimensions(lines);
+            var (_, _, _, maxY) = DetermineGridDimensions(lines);
 
             //NOTE: Always 0
-            minY = 0;
+            var minY = 0;
+
+            var sandSource = (x: 500, y: 0);
 
             //NOTE: Calculate the max width by simulating a full stack of sand
             var maxWidth = 1;
@@ -71,22 +88,29 @@ namespace AdventOfCode2022.Days
                 maxWidth += 2;
             }
 
-            var grid = GenerateGrid(lines, minX, maxX + maxWidth, minY, maxHeight);
+            var minWidth = sandSource.x - (maxWidth / 2);
+            maxWidth = sandSource.x + (maxWidth / 2);
 
-            for (var x = 0; x < maxX + maxWidth; x++)
+            var grid = GenerateGrid(lines, minWidth, maxWidth, minY, maxHeight);
+
+            for (var x = 0; x <= maxWidth; x++)
             {
                 grid[maxHeight, x] = State.Rock;
             }
 
-            var sandSource = (x: 500, y: 0);
             var count = 0;
             bool repeat;
+
+            //Directory.CreateDirectory("Output/Day14/B");
+            //_frameCount = 0;
+
             do
             {
                 count++;
 
                 repeat = SimulateSand(sandSource, grid);
-                //DrawGrid(grid, minX - maxWidth, minY);
+                //DrawGrid(grid, minWidth, minY);
+                //RenderGrid(grid, minWidth, minY, "Output/Day14/B");
             } while (!repeat);
 
             var answer = count - 1;
@@ -259,6 +283,44 @@ namespace AdventOfCode2022.Days
             }
 
             Logger.Debug(stringBuilder.ToString());
+        }
+
+        private static void RenderGrid(State[,] grid, int minX, int minY, string folder)
+        {
+            var stringBuilder = new StringBuilder();
+
+            using var image = new Bitmap(
+                (grid.GetLength(1) - minX) * FontSize, 
+                grid.GetLength(0) * FontSize, 
+                PixelFormat.Format24bppRgb
+            );
+            using var graphics = Graphics.FromImage(image);
+
+            for (var y = minY; y < grid.GetLength(0); y++)
+            {
+                for (var x = minX; x < grid.GetLength(1); x++)
+                {
+                    switch (grid[y, x])
+                    {
+                        case State.Air:
+                            graphics.DrawString(".", _font, _greyBrush, new PointF((x - minX) * FontSize, y * FontSize));
+                            break;
+
+                        case State.Rock:
+                            graphics.DrawString("#", _font, _whiteBrush, new PointF((x - minX) * FontSize, y * FontSize));
+                            break;
+
+                        case State.Sand:
+                            graphics.DrawString("o", _font, _goldBrush, new PointF((x - minX) * FontSize, y * FontSize));
+                            break;
+                    }
+
+                }
+
+                stringBuilder.AppendLine();
+            }
+
+            image.Save(Path.Combine(folder, $"frame_{_frameCount++}.png"), ImageFormat.Png);
         }
     }
 }
