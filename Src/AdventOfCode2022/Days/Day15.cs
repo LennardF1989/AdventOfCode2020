@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -93,10 +93,30 @@ namespace AdventOfCode2022.Days
             }
         }
 
+        class Rectangle
+        {
+            public int MinX { get; set; } 
+            public int MaxX { get; set; } 
+            public int MinY { get; set; } 
+            public int MaxY { get; set; }
+
+            public Rectangle(int minX, int maxX, int minY, int maxY)
+            {
+                MinX = minX;
+                MaxX = maxX;
+                MinY = minY;
+                MaxY = maxY;
+            }
+        }
+        
         public static void StartA()
         {
+            //const int targetY = 10;
+            const int targetY = 2000000;
+            
             var lines = File
-                .ReadAllLines("Content\\Day15_Test.txt")
+                //.ReadAllLines("Content//Day15_Test.txt")
+                .ReadAllLines("Content//Day15.txt")
                 .Select(x =>
                 {
                     var match = Regex.Match(x, "Sensor at x=(.*?), y=(.*?): closest beacon is at x=(.*?), y=(.*?)$");
@@ -110,10 +130,8 @@ namespace AdventOfCode2022.Days
                         x: int.Parse(match.Groups[3].Value),
                         y: int.Parse(match.Groups[4].Value)
                     );
-
-                    //var distance = (int)Math.Sqrt(((beacon.x - sensor.x) * (beacon.x - sensor.x)) +
-                    //                         ((beacon.y - sensor.y) * (beacon.y - sensor.y)));
-                    var distance = Math.Max(beacon.x, beacon.y) - 1;
+                    
+                    var distance = Math.Abs(beacon.x - sensor.x) + Math.Abs(beacon.y - sensor.y);
 
                     return (
                         sensor,
@@ -140,17 +158,33 @@ namespace AdventOfCode2022.Days
             var maxX = allCoords.Max(x => x.x);
             var minY = allCoords.Min(x => x.y);
             var maxY = allCoords.Max(x => x.y);
-
+            
             var offsetX = (minX < 0) ? Math.Abs(minX) : minX;
             var offsetY = (minY < 0) ? Math.Abs(minY) : minY;
 
-            var map = new State[
+            /*var map = new State[
                 Math.Abs(minX) + Math.Abs(maxX) + 10,
                 Math.Abs(minY) + Math.Abs(maxY) + 10
-            ];
+            ];*/
 
             var map2 = new Dictionary<(int x, int y), State>();
 
+            var rectangles = lines.Select(o =>
+            {
+                var coord = o.sensor;
+
+                return (line: o, new Rectangle(
+                    coord.x - o.distance, 
+                    coord.x + o.distance, 
+                    coord.y - o.distance,
+                    coord.y + o.distance
+                ));
+            }).ToList();
+            
+            var result = rectangles
+                .Where(x => x.Item2.MinY <= targetY && x.Item2.MaxY >= targetY)
+                .ToList();
+            
             var grid = new Grid
             {
                 MinX = minX,
@@ -162,30 +196,23 @@ namespace AdventOfCode2022.Days
                 //Map = map
                 Map2 = map2
             };
-
-            foreach (var line in lines)
+            
+            foreach (var o in result)
             {
-                grid.SetCoord(line.beacon.x, line.beacon.y, State.Beacon);
-                grid.SetCoord(line.sensor.x, line.sensor.y, State.Sensor);
-
-                grid.DrawGrid();
-
+                var line = o.line;
+                
                 var size = 1;
                 var x = line.sensor.x;
 
                 for (var y = line.sensor.y - line.distance; y < line.sensor.y; y++)
                 {
-                    for (var i = 0; i < size; i++)
+                    if (y == targetY)
                     {
-                        if (grid.GetState(x + i, y) != State.Empty)
+                        for (var i = 0; i < size; i++)
                         {
-                            continue;
+                            grid.SetCoord(x + i, y, State.ScanArea);
                         }
-
-                        grid.SetCoord(x + i, y, State.ScanArea);
                     }
-
-                    grid.DrawGrid();
 
                     x--;
                     size += 2;
@@ -193,31 +220,31 @@ namespace AdventOfCode2022.Days
 
                 for (var y = line.sensor.y; y <= line.sensor.y + line.distance; y++)
                 {
-                    for (var i = 0; i < size; i++)
+                    if (y == targetY)
                     {
-                        if (grid.GetState(x + i, y) != State.Empty)
+                        for (var i = 0; i < size; i++)
                         {
-                            continue;
+                            grid.SetCoord(x + i, y, State.ScanArea);
                         }
-
-                        grid.SetCoord(x + i, y, State.ScanArea);
                     }
 
                     x++;
                     size -= 2;
                 }
-
-                grid.DrawGrid();
             }
 
-            var count = 0;
-            for (int x = 0; x < grid.MaxY; x++)
+            foreach (var line in lines)
             {
-                if (grid.GetState(x, 10) == State.ScanArea)
-                {
-                    count++;
-                }
+                grid.SetCoord(line.beacon.x, line.beacon.y, State.Beacon);
+                grid.SetCoord(line.sensor.x, line.sensor.y, State.Sensor);
             }
+            
+            //grid.DrawGrid();
+
+            //Too low: 4902477
+            //Right:  5838453
+            var count2 = grid.Map2.Where(x => x.Key.y == targetY).Select(x => x.Value).ToList();
+            var count = count2.Count(x => x == State.ScanArea);
 
             var answer = count;
 
@@ -227,7 +254,7 @@ namespace AdventOfCode2022.Days
         public static void StartB()
         {
             var lines = File
-                .ReadAllLines("Content\\Day15_Test.txt")
+                .ReadAllLines("Content//Day15_Test.txt")
                 //.ReadAllLines("Content\\Day.txt")
                 ;
 
