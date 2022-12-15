@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using AdventOfCode.Shared;
 
 namespace AdventOfCode2022.Days
@@ -24,43 +25,25 @@ namespace AdventOfCode2022.Days
             public int MaxX { get; set; }
             public int MinY { get; set; }
             public int MaxY { get; set; }
-
-            public int OffsetX { get; set; }
-            public int OffsetY { get; set; }
-
-            //public State[,] Map { get; set; }
-            public Dictionary<(int x, int y), State> Map2 { get; set; }
-
-            public (int x, int y) GetCoord(int x, int y)
-            {
-                //return (x + OffsetX, y + OffsetY);
-                return (x, y);
-            }
+            
+            public Dictionary<(int x, int y), State> Map { get; set; }
 
             public State GetState(int x, int y)
             {
-                var coord = GetCoord(x, y);
-
-                //return Map[coord.y, coord.x];
-                return Map2.GetValueOrDefault(coord, State.Empty);
+                return Map.GetValueOrDefault((x, y), State.Empty);
             }
 
             public void SetCoord(int x, int y, State state)
             {
-                var coord = GetCoord(x, y);
-
-                //Map[coord.y, coord.x] = state;
-                Map2[coord] = state;
+                Map[(x, y)] = state;
             }
 
             public void DrawGrid()
             {
                 var stringBuilder = new StringBuilder();
-
-                //for (var y = 0; y < Map.GetLength(0); y++)
+                
                 for (var y = MinY; y < MaxY; y++)
                 {
-                    //for (var x = 0; x < Map.GetLength(1); x++)
                     for (var x = MinX; x < MaxX; x++)
                     {
                         var state = GetState(x, y);
@@ -111,9 +94,6 @@ namespace AdventOfCode2022.Days
         
         public static void StartA()
         {
-            //const int targetY = 10;
-            const int targetY = 2000000;
-            
             var lines = File
                 //.ReadAllLines("Content//Day15_Test.txt")
                 .ReadAllLines("Content//Day15.txt")
@@ -158,16 +138,8 @@ namespace AdventOfCode2022.Days
             var maxX = allCoords.Max(x => x.x);
             var minY = allCoords.Min(x => x.y);
             var maxY = allCoords.Max(x => x.y);
-            
-            var offsetX = (minX < 0) ? Math.Abs(minX) : minX;
-            var offsetY = (minY < 0) ? Math.Abs(minY) : minY;
 
-            /*var map = new State[
-                Math.Abs(minX) + Math.Abs(maxX) + 10,
-                Math.Abs(minY) + Math.Abs(maxY) + 10
-            ];*/
-
-            var map2 = new Dictionary<(int x, int y), State>();
+            var map = new Dictionary<(int x, int y), State>();
 
             var rectangles = lines.Select(o =>
             {
@@ -180,73 +152,89 @@ namespace AdventOfCode2022.Days
                     coord.y + o.distance
                 ));
             }).ToList();
-            
-            var result = rectangles
-                .Where(x => x.Item2.MinY <= targetY && x.Item2.MaxY >= targetY)
-                .ToList();
-            
-            var grid = new Grid
-            {
-                MinX = minX,
-                MaxX = maxX,
-                MinY = minY,
-                MaxY = maxY,
-                OffsetX = offsetX,
-                OffsetY = offsetY,
-                //Map = map
-                Map2 = map2
-            };
-            
-            foreach (var o in result)
-            {
-                var line = o.line;
-                
-                var size = 1;
-                var x = line.sensor.x;
 
-                for (var y = line.sensor.y - line.distance; y < line.sensor.y; y++)
+            //const int maxSize = 20;
+            const int maxSize = 4_000_000;
+
+            void Test(int targetY)
+            {
+                var grid = new State[maxSize + 1];
+
+                var result = rectangles
+                    .Where(x => x.Item2.MinY <= targetY && x.Item2.MaxY >= targetY)
+                    .ToList();
+
+                foreach (var o in result)
                 {
-                    if (y == targetY)
+                    var line = o.line;
+
+                    var size = 1;
+                    var x = line.sensor.x;
+
+                    for (var y = line.sensor.y - line.distance; y < line.sensor.y; y++)
                     {
-                        for (var i = 0; i < size; i++)
+                        if (y == targetY)
                         {
-                            grid.SetCoord(x + i, y, State.ScanArea);
+                            for (var i = 0; i < size && x + i < maxSize; i++)
+                            {
+                                if (x + i < 0)
+                                {
+                                    continue;
+                                }
+
+                                grid[x + i] = State.ScanArea;
+                            }
                         }
+
+                        x--;
+                        size += 2;
                     }
 
-                    x--;
-                    size += 2;
-                }
-
-                for (var y = line.sensor.y; y <= line.sensor.y + line.distance; y++)
-                {
-                    if (y == targetY)
+                    for (var y = line.sensor.y; y <= line.sensor.y + line.distance; y++)
                     {
-                        for (var i = 0; i < size; i++)
+                        if (y == targetY)
                         {
-                            grid.SetCoord(x + i, y, State.ScanArea);
-                        }
-                    }
+                            for (var i = 0; i < size && x + i < maxSize; i++)
+                            {
+                                if (x + i < 0)
+                                {
+                                    continue;
+                                }
 
-                    x++;
-                    size -= 2;
+                                grid[x + i] = State.ScanArea;
+                            }
+                        }
+
+                        x++;
+                        size -= 2;
+                    }
                 }
+
+                for (int x = 0; x < maxSize; x++)
+                {
+                    var state = grid[x];
+
+                    if (state == State.Empty)
+                    {
+                        Logger.Debug($"Found: {x},{targetY} => {x * 4000000 + targetY}");
+                    }
+                }
+            }
+
+            for (var y = 0; y < maxSize; y += 10000)
+            {
+                Parallel.For(0, 10000, Test);
             }
 
             foreach (var line in lines)
             {
-                grid.SetCoord(line.beacon.x, line.beacon.y, State.Beacon);
-                grid.SetCoord(line.sensor.x, line.sensor.y, State.Sensor);
+                //grid.SetCoord(line.beacon.x, line.beacon.y, State.Beacon);
+                //grid.SetCoord(line.sensor.x, line.sensor.y, State.Sensor);
             }
-            
+
             //grid.DrawGrid();
 
-            //Too low: 4902477
-            //Right:  5838453
-            var count2 = grid.Map2.Where(x => x.Key.y == targetY).Select(x => x.Value).ToList();
-            var count = count2.Count(x => x == State.ScanArea);
-
-            var answer = count;
+            var answer = 0;
 
             Logger.Info($"Day 15A: {answer}");
         }
@@ -254,13 +242,107 @@ namespace AdventOfCode2022.Days
         public static void StartB()
         {
             var lines = File
-                .ReadAllLines("Content//Day15_Test.txt")
-                //.ReadAllLines("Content\\Day.txt")
+                //.ReadAllLines("Content//Day15_Test.txt")
+                .ReadAllLines("Content//Day15.txt")
+                .Select(x =>
+                {
+                    var match = Regex.Match(x, "Sensor at x=(.*?), y=(.*?): closest beacon is at x=(.*?), y=(.*?)$");
+
+                    var sensor = (
+                        x: int.Parse(match.Groups[1].Value),
+                        y: int.Parse(match.Groups[2].Value)
+                    );
+
+                    var beacon = (
+                        x: int.Parse(match.Groups[3].Value),
+                        y: int.Parse(match.Groups[4].Value)
+                    );
+
+                    var distance = ManhattanDistance(sensor, beacon);
+
+                    return (
+                        sensor,
+                        beacon,
+                        distance
+                    );
+                })
+                .ToList()
                 ;
 
-            var answer = 0;
+            //const int maxSize = 20;
+            const long maxSize = 4_000_000;
 
+            var hashSets = new List<HashSet<(int x, int y)>>();
+
+            foreach (var line in lines)
+            {
+                var hashSet = new HashSet<(int x, int y)>();
+
+                for (var xOffset = -line.distance - 1; xOffset <= line.distance + 1; xOffset++)
+                {
+                    var x = line.sensor.x + xOffset;
+                    var yOffset = (line.distance - Math.Abs(xOffset)) + 1;
+
+                    hashSet.Add((x, line.sensor.y + yOffset));
+                    hashSet.Add((x, line.sensor.y - yOffset));
+                }
+
+                hashSets.Add(hashSet);
+            }
+
+            long answer = 0;
+
+            foreach (var hashSet in hashSets)
+            {
+                foreach (var coord in hashSet)
+                {
+                    if (coord.x <= 0 || coord.y <= 0 || coord.x >= maxSize || coord.y >= maxSize)
+                    {
+                        continue;
+                    }
+
+                    var overlap = lines.Any(x => ManhattanDistance(x.sensor, coord) <= x.distance);
+
+                    if (overlap)
+                    {
+                        continue;
+                    }
+
+                    Logger.Debug(coord);
+
+                    answer = (coord.x * maxSize) + coord.y;
+                    //goto answer;
+                }
+            }
+
+            //Too low: 1543906354
+            //Long! 12413999391794
+            answer:
             Logger.Info($"Day 15B: {answer}");
+        }
+
+        public static int ManhattanDistance((int x, int y) a, (int x, int y) b)
+        {
+            return Math.Abs(a.x - b.x) + Math.Abs(a.y - b.y);
+        }
+
+        public static void DrawGrid(HashSet<(int x, int y)> hashSet)
+        {
+            var stringBuilder = new StringBuilder();
+
+            for (var y = 0; y <= 20; y++)
+            {
+                for (var x = 0; x <= 20; x++)
+                {
+                    var state = hashSet.Contains((x, y));
+
+                    stringBuilder.Append(state ? '#' : '.');
+                }
+
+                stringBuilder.AppendLine();
+            }
+
+            Logger.Debug(stringBuilder.ToString());
         }
     }
 }

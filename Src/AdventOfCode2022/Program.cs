@@ -45,7 +45,7 @@ namespace AdventOfCode2022
 
             Logger.ShowDebug = true;
 
-            Day15.StartA();
+            //Day15.StartA();
             Day15.StartB();
 
             Console.ReadKey();
