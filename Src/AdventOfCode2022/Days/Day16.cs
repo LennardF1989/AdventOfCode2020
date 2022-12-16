@@ -4,9 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using AdventOfCode.Shared;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace AdventOfCode2022.Days
 {
+    //TODO: Learn DP with bitmask trick
+    //DONE: Learn Floyd–Warshall!
     public static class Day16
     {
         public class Valve
@@ -143,10 +146,100 @@ namespace AdventOfCode2022.Days
                 }
             });
 
-            var start = lines.First(x => x.valve.Name == "AA").valve;
-            
+            //NOTE: Couldn't we also just have optimized the graph by making weighted edges and replace the zero
+            //nodes with a higher cost?
+
+            //All values
+            var allValves = lines.Select(x => x.valve).ToList();
+            var allUsefulValves = lines.Select(x => x.valve).Where(x => x.FlowRate > 0).ToList();
+
+            //Floyd-Warshall
+            var floydWarshall = FloydWarshall(allValves);
+            var optimizedFloydWarshall = OptimizedFloydWarshall(allValves, floydWarshall);
+
+            var start = tunnelLookup["AA"].valve;
+            var answer = 0;
+
+            //Then... just bruteforce the hell out of it!
+            {
+                const int maxTime = 26;
+
+                var allFlowRates = allValves.Select((x, i) => (x.FlowRate, x)).ToList();
+
+                int RecursiveSolve(Valve current, int time, HashSet<Valve> visited, bool elephants)
+                {
+                    var copy = new HashSet<Valve>(visited) { current };
+
+                    var best = 0;
+
+                    foreach (var v in allUsefulValves)
+                    {
+                        var dist = optimizedFloydWarshall[current][v] + 1;
+
+                        if (v.FlowRate == 0 || copy.Contains(v) || dist > time)
+                        {
+                            continue;
+                        }
+
+                        var score = v.FlowRate * (time - dist);
+
+                        if (dist != time)
+                        {
+                            score += RecursiveSolve(v, time - dist, copy, elephants);
+                        }
+
+                        best = Math.Max(score, best);
+                    }
+
+                    if (elephants)
+                    {
+                        best = Math.Max(best, RecursiveSolve(start, 26, copy, false));
+                    }
+
+                    return best;
+                }
+
+                answer = RecursiveSolve(start, 26, new HashSet<Valve>(), true);
+
+                /*var best = 0;
+                const int maxTime = 26;
+
+                void DFS(int score, Valve valve, HashSet<Valve> visited, int time, bool initial)
+                {
+                    best = Math.Max(best, score);
+
+                    if (visited.Count >= optimizedFloydWarshall.Count)
+                    {
+                        return;
+                    }
+
+                    foreach (var (targetValve, distance) in optimizedFloydWarshall[valve])
+                    {
+                        if (visited.Contains(targetValve) || time + distance + 1 >= maxTime)
+                        {
+                            continue;
+                        }
+
+                        DFS(
+                            score + (maxTime - time - distance - 1) * targetValve.FlowRate,
+                            targetValve,
+                            new HashSet<Valve>(visited) { targetValve },
+                            time + distance + 1,
+                            initial
+                        );
+                    }
+
+                    if (initial)
+                    {
+                        DFS(score, start, visited, 0, false);
+                    }
+                }
+
+                DFS(0, start, new HashSet<Valve>(), 0, true);*/
+            }
+
             //Do a BFS
-            var queue = new Queue<(int time, Valve location, Valve elephant, int score, HashSet<Valve> opened)>();
+            /*var queue = new Queue<(int time, Valve location, Valve elephant, int score, HashSet<Valve> opened)>();
             queue.Enqueue((1, start, start, 0, new HashSet<Valve>()));
 
             var visited = new Dictionary<(int time, Valve location, Valve elephant), int>();
@@ -190,7 +283,7 @@ namespace AdventOfCode2022.Days
                     }
                     
                     var opened = new HashSet<Valve>(v.opened);
-                    var state = (v.time + 1, v.location, v.elephant, score, opened);
+                    var state = (time + 1, v.location, v.elephant, score, opened);
                     queue.Enqueue(state);
                     
                     continue;
@@ -262,11 +355,72 @@ namespace AdventOfCode2022.Days
                         }
                     }   
                 }
+            }*/
+
+            //Too low: 2423
+            //Too high: 2727
+            //Answer: 2425
+            Logger.Info($"Day 16B: {answer}");
+        }
+
+        private static Dictionary<(Valve a, Valve b), int> FloydWarshall(List<Valve> allValves)
+        {
+            const int INFINITE = 1 * (10 ^ 9);
+
+            var floydWarshall = new Dictionary<(Valve a, Valve b), int>();
+
+            foreach (var valve1 in allValves)
+            {
+                foreach (var valve2 in allValves)
+                {
+                    if (valve1 == valve2)
+                    {
+                        floydWarshall[(valve1, valve2)] = 0;
+                    }
+                    else if (valve1.Tunnels.Contains(valve2))
+                    {
+                        floydWarshall[(valve1, valve2)] = 1;
+                    }
+                    else
+                    {
+                        floydWarshall[(valve1, valve2)] = INFINITE;
+                    }
+                }
             }
 
-            var answer = best;
-            
-            Logger.Info($"Day 16B: {answer}");
+            foreach (var k in allValves)
+            {
+                foreach (var i in allValves)
+                {
+                    foreach (var j in allValves)
+                    {
+                        floydWarshall[(i, j)] = Math.Min(floydWarshall[(i, j)], floydWarshall[(i, k)] + floydWarshall[(k, j)]);
+                    }
+                }
+            }
+
+            return floydWarshall;
+        }
+
+        private static Dictionary<Valve, Dictionary<Valve, int>> OptimizedFloydWarshall(List<Valve> allValves, Dictionary<(Valve a, Valve b), int> floydWarshall)
+        {
+            var floydWarshallAsDictionary = new Dictionary<Valve, Dictionary<Valve, int>>();
+
+            foreach (var valve1 in allValves)
+            {
+                if (valve1.Name != "AA" && valve1.FlowRate == 0)
+                {
+                    continue;
+                }
+
+                var valves = floydWarshall
+                    .Where(x => x.Key.a == valve1 && x.Key.b.FlowRate > 0)
+                    .ToDictionary(x => x.Key.b, x => x.Value);
+
+                floydWarshallAsDictionary.Add(valve1, valves);
+            }
+
+            return floydWarshallAsDictionary;
         }
     }
 }
