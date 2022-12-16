@@ -167,7 +167,10 @@ namespace AdventOfCode2022.Days
 
                 if (v.time == 26)
                 {
-                    best = Math.Max(best, v.score);
+                    if (v.score > best)
+                    {
+                        best = v.score;
+                    }
                     
                     continue;
                 }
@@ -221,7 +224,7 @@ namespace AdventOfCode2022.Days
                         foreach (var tunnel in v.elephant.Tunnels)
                         {
                             var state = (
-                                v.time + 1, tunnel, v.elephant, score, 
+                                v.time + 1, v.location, tunnel, score, 
                                 new HashSet<Valve>(opened)
                             );
                             queue.Enqueue(state);
@@ -251,8 +254,10 @@ namespace AdventOfCode2022.Days
 
                         foreach (var tunnel2 in v.elephant.Tunnels)
                         {
-                            var opened = new HashSet<Valve>(v.opened);
-                            var state = (v.time + 1, tunnel, tunnel2, score, opened);
+                            var state = (
+                                v.time + 1, tunnel, tunnel2, score, 
+                                new HashSet<Valve>(v.opened)
+                            );
                             queue.Enqueue(state);
                         }
                     }   
