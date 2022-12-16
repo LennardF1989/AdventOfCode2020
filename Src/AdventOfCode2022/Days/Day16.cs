@@ -117,8 +117,8 @@ namespace AdventOfCode2022.Days
         public static void StartB()
         {
             var lines = File
-                    .ReadAllLines("Content//Day16_Test.txt")
-                    //.ReadAllLines("Content//Day16.txt")
+                    //.ReadAllLines("Content//Day16_Test.txt")
+                    .ReadAllLines("Content//Day16.txt")
                     .Select(x =>
                     {
                         var match = Regex.Match(x, "Valve (.*?) has flow rate=(.*?); tunnel(s){0,1} lead(s){0,1} to valve(s){0,1} (.*)");
@@ -155,16 +155,87 @@ namespace AdventOfCode2022.Days
 
             //Floyd-Warshall
             var floydWarshall = FloydWarshall(allValves);
-            var optimizedFloydWarshall = OptimizedFloydWarshall(allValves, floydWarshall);
+            var floydWarshallDictionary = FloydWarshallAsDictionary(allValves, floydWarshall);
 
             var start = tunnelLookup["AA"].valve;
             var answer = 0;
 
             //Then... just bruteforce the hell out of it!
             {
-                const int maxTime = 26;
+                IEnumerable<HashSet<Valve>> GenerateOpenOptions(Valve current, HashSet<Valve> openValves, int timeLeft)
+                {
+                    foreach (var next in allUsefulValves)
+                    {
+                        if (!openValves.Contains(next) && floydWarshallDictionary[current][next] < timeLeft)
+                        {
+                            openValves.Add(next);
 
-                var allFlowRates = allValves.Select((x, i) => (x.FlowRate, x)).ToList();
+                            var result = GenerateOpenOptions(
+                                next, openValves, timeLeft - floydWarshallDictionary[current][next] - 1
+                            );
+
+                            foreach (var r in result)
+                            {
+                                yield return r;
+                            }
+
+                            openValves.Remove(openValves.Last());
+                        }
+                    }
+
+                    yield return new HashSet<Valve>(openValves);
+                }
+
+                int GetOrderScore(HashSet<Valve> openValves, int timeLeft)
+                {
+                    var current = start;
+                    var score = 0;
+
+                    foreach (var valve in openValves)
+                    {
+                        timeLeft -= floydWarshallDictionary[current][valve] + 1;
+                        score += valve.FlowRate * timeLeft;
+                        current = valve;
+                    }
+
+                    return score;
+                }
+
+                var ways = GenerateOpenOptions(start, new HashSet<Valve>(), 26).ToList();
+
+                var bestScoresDictionary = new Dictionary<string, (HashSet<Valve>, int)> ();
+
+                foreach (var order in ways)
+                {
+                    var key = string.Join(string.Empty, order.Select(x => x.Name).OrderBy(x => x));
+                    var score = GetOrderScore(order, 26);
+                    bestScoresDictionary[key] = (order, Math.Max(bestScoresDictionary.GetValueOrDefault(key, (null, 0)).Item2, score));
+                }
+
+                var bestScores = bestScoresDictionary.ToList();
+
+                answer = 0;
+
+                for (var h = 0; h < bestScores.Count; h++)
+                {
+                    for (var e = h + 1; e < bestScores.Count; e++)
+                    {
+                        var hs = bestScores[h];
+                        var es = bestScores[e];
+
+                        foreach (var valve in hs.Value.Item1)
+                        {
+                            if (es.Value.Item1.Contains(valve))
+                            {
+                                break;
+                            }
+
+                            answer = Math.Max(answer, hs.Value.Item2 + es.Value.Item2);
+                        }
+                    }
+                }
+
+                /*var allFlowRates = allValves.Select((x, i) => (x.FlowRate, x)).ToList();
 
                 int RecursiveSolve(Valve current, int time, HashSet<Valve> visited, bool elephants)
                 {
@@ -199,7 +270,7 @@ namespace AdventOfCode2022.Days
                     return best;
                 }
 
-                answer = RecursiveSolve(start, 26, new HashSet<Valve>(), true);
+                answer = RecursiveSolve(start, 26, new HashSet<Valve>(), true);*/
 
                 /*var best = 0;
                 const int maxTime = 26;
@@ -402,9 +473,9 @@ namespace AdventOfCode2022.Days
             return floydWarshall;
         }
 
-        private static Dictionary<Valve, Dictionary<Valve, int>> OptimizedFloydWarshall(List<Valve> allValves, Dictionary<(Valve a, Valve b), int> floydWarshall)
+        private static Dictionary<Valve, Dictionary<Valve, int>> FloydWarshallAsDictionary(List<Valve> allValves, Dictionary<(Valve a, Valve b), int> floydWarshall)
         {
-            var floydWarshallAsDictionary = new Dictionary<Valve, Dictionary<Valve, int>>();
+            var dictionary = new Dictionary<Valve, Dictionary<Valve, int>>();
 
             foreach (var valve1 in allValves)
             {
@@ -414,13 +485,13 @@ namespace AdventOfCode2022.Days
                 }
 
                 var valves = floydWarshall
-                    .Where(x => x.Key.a == valve1 && x.Key.b.FlowRate > 0)
+                    .Where(x => x.Key.a == valve1)
                     .ToDictionary(x => x.Key.b, x => x.Value);
 
-                floydWarshallAsDictionary.Add(valve1, valves);
+                dictionary.Add(valve1, valves);
             }
 
-            return floydWarshallAsDictionary;
+            return dictionary;
         }
     }
 }
