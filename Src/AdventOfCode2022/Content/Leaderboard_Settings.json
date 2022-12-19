@@ -6,5 +6,8 @@
   "mergeMapping": {
     "1132897": "1101553"
   },
+  "disqualifyStarting": {
+    "2006851": 12
+  },
   "allowAnonymous": false 
 }

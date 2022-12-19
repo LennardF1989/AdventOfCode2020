@@ -59,6 +59,9 @@ namespace AdventOfCode.Shared
             [JsonProperty("mergeMapping")]
             public Dictionary<string, string> MergeMapping { get; set; }
 
+            [JsonProperty("disqualifyStarting")]
+            public Dictionary<string, int> DisqualifyStarting { get; set; }
+
             [JsonProperty("allowAnonymous")]
             public bool AllowAnonymous { get; set; }
 
@@ -142,7 +145,7 @@ namespace AdventOfCode.Shared
                 .Where(x => leaderboardSettings.AllowAnonymous || !x.IsAnonymous)
                 .ToList();
 
-            result = ExportLocalScoreboardOriginal(members);
+            result = ExportLocalScoreboardOriginal(members, leaderboardSettings);
 
             File.WriteAllText("leaderboard-original.csv", result);
         }
@@ -293,13 +296,21 @@ namespace AdventOfCode.Shared
             return stringBuilder.ToString();
         }
 
-        private static string ExportLocalScoreboardOriginal(List<Member> members)
+        private static string ExportLocalScoreboardOriginal(List<Member> members, LeaderboardSettings leaderboardSettings)
         {
             var scoreboardEntriesPerDay = new List<List<ScoreboardEntry>>();
 
             for (int i = 0; i < members[0].Days.Count; i++)
             {
-                var scoresDay1 = members
+                var activeMembers = members.Where(x =>
+                {
+                    var isDisqualifiedSince = leaderboardSettings
+                        .DisqualifyStarting.GetValueOrDefault(x.Id, 0) - 1;
+
+                    return isDisqualifiedSince < 0 || isDisqualifiedSince > i;
+                }).ToList();
+
+                var scoresDay1 = activeMembers
                     .Where(x => x.Days[i].Part1.HasValue)
                     .OrderBy(x => x.Days[i].Part1)
                     .Select((x, index) => new ScoreboardEntry
@@ -313,7 +324,7 @@ namespace AdventOfCode.Shared
                     })
                     .ToList();
 
-                var scoresDay2 = members
+                var scoresDay2 = activeMembers
                     .Where(x => x.Days[i].Part2.HasValue)
                     .OrderBy(x => x.Days[i].Part2)
                     .Select((x, index) => new ScoreboardEntry
