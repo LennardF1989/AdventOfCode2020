@@ -51,12 +51,14 @@ namespace AdventOfCode2022
                 Day18.StartB();
                 Day19.StartA();
                 Day19.StartB();
+                Day20.StartA();
+                Day20.StartB();
             }
 
             Logger.ShowDebug = true;
 
-            Day20.StartA();
-            Day20.StartB();
+            Day21.StartA();
+            Day21.StartB();
 
             Console.ReadKey();
         }
