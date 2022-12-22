@@ -10,7 +10,7 @@ namespace AdventOfCode2022
         {
             Logger.ShowDebug = false;
             
-            //if(false)
+            if(false)
             {
                 Leaderboard.Start();
 
