@@ -10,7 +10,7 @@ namespace AdventOfCode2022
         {
             Logger.ShowDebug = false;
             
-            //if(false)
+            if(false)
             {
                 Leaderboard.Start();
 
@@ -55,12 +55,14 @@ namespace AdventOfCode2022
                 Day20.StartB();
                 Day21.StartA();
                 Day21.StartB();
+                Day22.StartA();
+                Day22.StartB();
             }
 
             Logger.ShowDebug = true;
 
-            Day22.StartA();
-            Day22.StartB();
+            Day23.StartA();
+            Day23.StartB();
 
             Console.ReadKey();
         }
