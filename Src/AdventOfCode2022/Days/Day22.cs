@@ -99,7 +99,7 @@ namespace AdventOfCode2022.Days
                 .Split("\n\n");
 
             var result = ParseInput2(lines);
-            var answer = FollowInstructions2(result, 8, 0);
+            var answer = FollowInstructions2(result, 50, 0);
 
             Logger.Info($"Day 22B: {answer}");
         }
@@ -163,7 +163,7 @@ namespace AdventOfCode2022.Days
             var faceX = positionX % size;
             var faceY = positionY % size;
             var face = result.faces[currentFace];
-            var current = result.grid[positionY][positionY];
+            var current = result.grid[positionY][positionX];
 
             var path = new HashSet<(int x, int y)>
             {
@@ -176,8 +176,8 @@ namespace AdventOfCode2022.Days
             {
                 if (offset > 0)
                 {
-                    var tempFacing = (int)facing + (4 - offset);
-                    facing = tempFacing > 3 ? Facing.North : (Facing)tempFacing;
+                    var tempFacing = ((int)facing + (4 - offset)) % 4;
+                    facing = (Facing)tempFacing;
                 }
 
                 for (var i2 = 0; i2 < offset; i2++)
@@ -276,6 +276,8 @@ namespace AdventOfCode2022.Days
 
                         current = face[faceY][faceX];
                         path.Add((current.X, current.Y));
+
+                        Logger.Debug(current.X + "," + current.Y);
 
                         //DrawGrid(result.grid, path, current.X, current.Y);
                     }
