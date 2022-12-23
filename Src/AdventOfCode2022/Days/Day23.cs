@@ -27,8 +27,43 @@ namespace AdventOfCode2022.Days
             var lines = File
                 //.ReadAllLines("Content//Day23_Test.txt")
                 //.ReadAllLines("Content//Day23_Test2.txt")
-                .ReadAllLines("Content//Day23.txt")
-                .SelectMany((y, i) =>
+                .ReadAllLines("Content//Day23.txt");
+
+            var input = ParseInput(lines);
+            var (elfs, _) = SimulateRound(input, 10);
+
+            //DrawGrid(elfs);
+
+            var minX = elfs.Min(x => x.x);
+            var maxX = elfs.Max(x => x.x);
+            var minY = elfs.Min(x => x.y);
+            var maxY = elfs.Max(x => x.y);
+
+            var answer = ((maxY - minY + 1) * (maxX - minX + 1)) - elfs.Count;
+
+            Logger.Info($"Day 23A: {answer}");
+        }
+
+        public static void StartB()
+        {
+            var lines = File
+                //.ReadAllLines("Content//Day23_Test.txt")
+                //.ReadAllLines("Content//Day23_Test2.txt")
+                .ReadAllLines("Content//Day23.txt");
+
+            var input = ParseInput(lines);
+            var (elfs, round) = SimulateRound(input, 0);
+
+            //DrawGrid(elfs);
+
+            var answer = round;
+
+            Logger.Info($"Day 23B: {answer}");
+        }
+
+        private static List<Point> ParseInput(string[] lines)
+        {
+            return lines.SelectMany((y, i) =>
                 {
                     return y
                         .Select((x, i2) => (x, i2, i))
@@ -37,7 +72,10 @@ namespace AdventOfCode2022.Days
                         .ToList();
                 })
                 .ToList();
+        }
 
+        private static (HashSet<Point> elfs, int round) SimulateRound(List<Point> input, int maxRounds)
+        {
             var neighbors = new[]
                 {
                     new Point(0, -1), //N
@@ -49,17 +87,17 @@ namespace AdventOfCode2022.Days
                     new Point(-1, 0), //W
                     new Point(-1, -1), //NW
                 }
-                .Select((x, i) => ((Facing) i, x))
-                .ToDictionary(x => x.Item1, x => x.x);
+                .Select((x, i) => (facing: (Facing)i, point: x))
+                .ToDictionary(x => x.facing, x => x.point);
 
-            var groups = new Dictionary<Facing, Point[]>()
+            var groups = new Dictionary<Facing, Point[]>
             {
                 {
                     Facing.North, new[]
                     {
                         neighbors[Facing.North],
                         neighbors[Facing.NorthEast],
-                        neighbors[Facing.NorthWest],
+                        neighbors[Facing.NorthWest]
                     }
                 },
                 {
@@ -67,7 +105,7 @@ namespace AdventOfCode2022.Days
                     {
                         neighbors[Facing.South],
                         neighbors[Facing.SouthEast],
-                        neighbors[Facing.SouthWest],
+                        neighbors[Facing.SouthWest]
                     }
                 },
                 {
@@ -75,7 +113,7 @@ namespace AdventOfCode2022.Days
                     {
                         neighbors[Facing.West],
                         neighbors[Facing.NorthWest],
-                        neighbors[Facing.SouthWest],
+                        neighbors[Facing.SouthWest]
                     }
                 },
                 {
@@ -96,10 +134,13 @@ namespace AdventOfCode2022.Days
                 Facing.East
             };
 
-            var elfs = new HashSet<Point>(lines);
+            var elfs = new HashSet<Point>(input);
+            var round = 0;
 
-            for (var i = 0; i < 10; i++)
+            while (true)
             {
+                round++;
+
                 var proposedMoves = new Dictionary<Point, Point>();
 
                 //Part 1
@@ -143,7 +184,7 @@ namespace AdventOfCode2022.Days
                             foundFacing = true;
                             break;
 
-                            nextFacing:;
+                        nextFacing:;
                         }
 
                         if (foundFacing)
@@ -154,7 +195,7 @@ namespace AdventOfCode2022.Days
                     }
                 }
 
-                if (proposedMoves.Count == 0)
+                if (proposedMoves.Count == 0 || (maxRounds > 0 && round > maxRounds))
                 {
                     break;
                 }
@@ -179,33 +220,17 @@ namespace AdventOfCode2022.Days
                 facingOrder.Add(temp);
             }
 
+            return (elfs, round);
+        }
+
+        private static void DrawGrid(HashSet<Point> elfs)
+        {
+            var stringBuilder = new StringBuilder();
+
             var minX = elfs.Min(x => x.x);
             var maxX = elfs.Max(x => x.x);
             var minY = elfs.Min(x => x.y);
             var maxY = elfs.Max(x => x.y);
-
-            DrawGrid(elfs, minX, maxX, minY, maxY);
-
-            var answer = ((maxY - minY + 1) * (maxX - minX + 1)) - elfs.Count;
-
-            Logger.Info($"Day 23A: {answer}");
-        }
-
-        public static void StartB()
-        {
-            var lines = File
-                    .ReadAllLines("Content//Day23_Test.txt")
-                //.ReadAllLines("Content//Day23.txt")
-                ;
-
-            var answer = 0;
-
-            Logger.Info($"Day 23B: {answer}");
-        }
-
-        private static void DrawGrid(HashSet<Point> elfs, int minX, int maxX, int minY, int maxY)
-        {
-            var stringBuilder = new StringBuilder();
 
             for (var y = minY; y <= maxY; y++)
             {
