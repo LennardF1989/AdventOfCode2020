@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using AdventOfCode.Shared;
 
 namespace AdventOfCode2022.Days
@@ -24,8 +25,9 @@ namespace AdventOfCode2022.Days
         public static void StartA()
         {
             var lines = File
-                .ReadAllLines("Content//Day23_Test.txt")
-                //.ReadAllLines("Content//Day23.txt")
+                //.ReadAllLines("Content//Day23_Test.txt")
+                //.ReadAllLines("Content//Day23_Test2.txt")
+                .ReadAllLines("Content//Day23.txt")
                 .SelectMany((y, i) =>
                 {
                     return y
@@ -35,8 +37,6 @@ namespace AdventOfCode2022.Days
                         .ToList();
                 })
                 .ToList();
-
-            var hashSet = new HashSet<Point>(lines);
 
             var neighbors = new[]
                 {
@@ -88,53 +88,105 @@ namespace AdventOfCode2022.Days
                 }
             };
 
+            var facingOrder = new List<Facing>
+            {
+                Facing.North,
+                Facing.South,
+                Facing.West,
+                Facing.East
+            };
+
+            var elfs = new HashSet<Point>(lines);
+
             for (var i = 0; i < 10; i++)
             {
                 var proposedMoves = new Dictionary<Point, Point>();
-                Facing? firstFacing = null;
-                
-                //Part 1
-                foreach (var point in hashSet)
-                {
-                    var noNeighbors = false;
-                    var lastGroup = Facing.North;
-                    
-                    foreach (var group in groups)
-                    {
-                        noNeighbors = true;
-                        lastGroup = group.Key;
-                    
-                        foreach (var neighbor in group.Value)
-                        {
-                            var p = new Point(point.x + neighbor.x, point.y + neighbor.y);
 
-                            if (hashSet.Contains(p))
-                            {
-                                noNeighbors = false;
-                                break;
-                            }
-                        }
-                    }
-                
-                    if (noNeighbors)
+                //Part 1
+                foreach (var elf in elfs)
+                {
+                    var elfNearby = false;
+
+                    foreach (var neighbor in neighbors)
                     {
-                        if (!firstFacing.HasValue)
+                        var p = new Point(elf.x + neighbor.Value.x, elf.y + neighbor.Value.y);
+
+                        if (elfs.Contains(p))
                         {
-                            firstFacing = lastGroup;
+                            elfNearby = true;
+
+                            break;
                         }
-                    
-                        var direction = neighbors[lastGroup];
-                        proposedMoves.Add(point, new Point(point.x + direction.x, point.y + direction.y));
                     }
-                    
-                    //Each elf has its own list.
+
+                    if (elfNearby)
+                    {
+                        var lastGroup = Facing.North;
+                        var foundFacing = false;
+
+                        foreach (var facing in facingOrder)
+                        {
+                            lastGroup = facing;
+
+                            var group = groups[facing];
+
+                            foreach (var neighbor in group)
+                            {
+                                var p = new Point(elf.x + neighbor.x, elf.y + neighbor.y);
+
+                                if (elfs.Contains(p))
+                                {
+                                    goto nextFacing;
+                                }
+                            }
+
+                            foundFacing = true;
+                            break;
+
+                            nextFacing:;
+                        }
+
+                        if (foundFacing)
+                        {
+                            var direction = neighbors[lastGroup];
+                            proposedMoves.Add(elf, new Point(elf.x + direction.x, elf.y + direction.y));
+                        }
+                    }
                 }
-                
+
+                if (proposedMoves.Count == 0)
+                {
+                    break;
+                }
+
                 //Part 2
+                foreach (var proposedMove in proposedMoves)
+                {
+                    if (proposedMoves.Count(x => x.Value == proposedMove.Value) > 1)
+                    {
+                        continue;
+                    }
+
+                    elfs.Remove(proposedMove.Key);
+                    elfs.Add(proposedMove.Value);
+                }
+
                 proposedMoves.Clear();
+
+                //Cleanup
+                var temp = facingOrder[0];
+                facingOrder.RemoveAt(0);
+                facingOrder.Add(temp);
             }
 
-            var answer = 0;
+            var minX = elfs.Min(x => x.x);
+            var maxX = elfs.Max(x => x.x);
+            var minY = elfs.Min(x => x.y);
+            var maxY = elfs.Max(x => x.y);
+
+            DrawGrid(elfs, minX, maxX, minY, maxY);
+
+            var answer = ((maxY - minY + 1) * (maxX - minX + 1)) - elfs.Count;
 
             Logger.Info($"Day 23A: {answer}");
         }
@@ -149,6 +201,30 @@ namespace AdventOfCode2022.Days
             var answer = 0;
 
             Logger.Info($"Day 23B: {answer}");
+        }
+
+        private static void DrawGrid(HashSet<Point> elfs, int minX, int maxX, int minY, int maxY)
+        {
+            var stringBuilder = new StringBuilder();
+
+            for (var y = minY; y <= maxY; y++)
+            {
+                for (var x = minX; x <= maxX; x++)
+                {
+                    if (elfs.Contains(new Point(x, y)))
+                    {
+                        stringBuilder.Append('#');
+                    }
+                    else
+                    {
+                        stringBuilder.Append('.');
+                    }
+                }
+
+                stringBuilder.AppendLine();
+            }
+
+            Logger.Debug(stringBuilder.ToString());
         }
     }
 }
