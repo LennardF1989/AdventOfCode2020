@@ -12,5 +12,12 @@ namespace AdventOfCode.Shared.Extensions
         {
             return source.Select(selector).ToList();
         }
+
+        public static HashSet<TResult> SelectHashSet<TSource, TResult>(
+            this IEnumerable<TSource> source, Func<TSource, TResult> selector
+        )
+        {
+            return source.Select(selector).ToHashSet();
+        }
     }
 }
