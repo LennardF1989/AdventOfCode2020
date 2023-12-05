@@ -9,6 +9,11 @@ namespace AdventOfCode.Shared.Extensions
             return int.Parse(str);
         }
 
+        public static long ToLong(this string str)
+        {
+            return long.Parse(str);
+        }
+
         public static string[] Split(this string str, string separator, bool trimEntries = false, bool removeEmptyEntries = false)
         {
             var options = StringSplitOptions.None;

@@ -35,13 +35,13 @@ namespace AdventOfCode2023.Days
                 }
             }
 
+            //NOTE: Moore neighborhood
             private static readonly List<(int x, int y)> _surroundingCoords = new()
             {
                 (-1, -1),
                 (-1, 0),
                 (-1, 1),
                 (0, -1),
-                (0, 0),
                 (0, 1),
                 (1, -1),
                 (1, 0),
@@ -400,6 +400,7 @@ namespace AdventOfCode2023.Days
                 public char Value { get; init; }
             }
 
+            //NOTE: Moore neighborhood
             private static readonly List<(int x, int y)> _surroundingCoords = new()
             {
                 (-1, -1),
