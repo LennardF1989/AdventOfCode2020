@@ -19,5 +19,10 @@ namespace AdventOfCode.Shared.Extensions
         {
             return source.Select(selector).ToHashSet();
         }
+
+        public static IEnumerable<TSource> WhereNotNull<TSource>(this IEnumerable<TSource> source)
+        {
+            return source.Where(x => x is not null);
+        }
     }
 }
