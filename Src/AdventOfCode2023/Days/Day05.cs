@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using AdventOfCode.Shared;
 using AdventOfCode.Shared.Extensions;
@@ -25,8 +24,8 @@ namespace AdventOfCode2023.Days
 
             nextMap:
                 var result = kvp.Value
-                    .Select(x => x.GetSource(value))
-                    .SingleOrDefault(x => x > -1, -1);
+                    .Find(x => x.IsSourceInRange(value))
+                    ?.GetDestination(value) ?? value;
 
                 if (result > -1)
                 {
@@ -54,9 +53,13 @@ namespace AdventOfCode2023.Days
 
             var locations = new ConcurrentBag<long>();
 
+            var mapsAsArray = input.maps
+                .Select(x => x.Value.OrderBy(y => y.sourceStart).ToArray())
+                .ToArray();
+
             Parallel.For(0, input.seeds.Count / 2, (i) =>
             {
-                Logger.Debug($"Thread {i}");
+                Logger.Debug($"Thread {i} - Start");
 
                 var min = long.MaxValue;
 
@@ -65,28 +68,32 @@ namespace AdventOfCode2023.Days
 
                 for (var j = 0; j < length; j++)
                 {
+                    var mapIndex = 0;
                     var value = startSeed + j;
-                    var kvp = input.maps.First(x => x.Key.from == "seed");
+                    var kvp = mapsAsArray[mapIndex];
 
-                    nextMap:
-                    var result = kvp.Value
-                        .Select(x => x.GetSource(value))
-                        .SingleOrDefault(x => x > -1, -1);
+                nextMap:
+                    var first = kvp[0];
+                    var last = kvp[^1];
 
-                    if (result > -1)
+                    if (value >= first.sourceStart && value < last.sourceEnd)
                     {
-                        value = result;
+                        value = Array.Find(kvp, x => x.IsSourceInRange(value))?.GetDestination(value) ?? value;
                     }
 
-                    kvp = input.maps.FirstOrDefault(x => x.Key.from == kvp.Key.to);
+                    mapIndex++;
 
-                    if (kvp.Key != null)
+                    if (mapIndex < mapsAsArray.Length)
                     {
+                        kvp = mapsAsArray[mapIndex];
+
                         goto nextMap;
                     }
 
                     min = Math.Min(value, min);
                 }
+
+                Logger.Debug($"Thread {i} - Done");
 
                 locations.Add(min);
             });
@@ -129,7 +136,11 @@ namespace AdventOfCode2023.Days
                         {
                             var result = x.Split(" ").SelectList(y => y.ToLong());
 
-                            return new MapEntry(result[0], result[1], result[2]);
+                            return new MapEntry(
+                                result[0] - result[1], 
+                                result[1], 
+                                result[1] + result[2]
+                            );
                         });
 
                     maps.Add(new Map(mapFrom, mapTo), mapEntries);
@@ -143,16 +154,16 @@ namespace AdventOfCode2023.Days
 
         record Map(string from, string to);
 
-        record MapEntry(long destinationStart, long sourceStart, long length)
+        record MapEntry(long destinationDifference, long sourceStart, long sourceEnd)
         {
-            public long GetSource(long destination)
+            public bool IsSourceInRange(long source)
             {
-                if (destination >= sourceStart && destination <= sourceStart + length - 1)
-                {
-                    return destination + (destinationStart - sourceStart);
-                }
+                return source >= sourceStart && source < sourceEnd;
+            }
 
-                return -1;
+            public long GetDestination(long source)
+            {
+                return source + destinationDifference;
             }
         }
     }
