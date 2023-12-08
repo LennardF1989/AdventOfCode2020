@@ -31,12 +31,15 @@ namespace AdventOfCode2023
 
                 Day06.StartA();
                 Day06.StartB();
+
+                Day07.StartA();
+                Day07.StartB();
             }
 
             Logger.ShowDebug = true;
 
-            Day07.StartA();
-            Day07.StartB();
+            Day08.StartA();
+            Day08.StartB();
 
             Console.ReadKey();
         }
