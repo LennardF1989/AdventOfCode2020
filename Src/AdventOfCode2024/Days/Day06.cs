@@ -1,6 +1,6 @@
 ﻿namespace AdventOfCode2024.Days
 {
-    public class Day06 : /*IDayA,*/ IDayB
+    public class Day06 : IDayA, IDayB
     {
         private enum Tile
         {
